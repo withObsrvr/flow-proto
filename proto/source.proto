@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package source;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/withObsrvr/flow-proto/proto/source";
+
+// DataMessage is the basic message exchanged from a Source.
+message DataMessage {
+  // The raw data payload.
+  bytes payload = 1;
+  
+  // Metadata about the message.
+  map<string, string> metadata = 2;
+  
+  // Timestamp when the message was created.
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+// Request and response messages for service capabilities.
+message CapabilitiesRequest {}
+
+message CapabilitiesResponse {
+  string service_name = 1;
+  string service_version = 2;
+  repeated string supported_features = 3;
+  // Additional capabilities can be added as key-value pairs.
+  map<string, string> capabilities = 4;
+}
+
+// Request and response messages for configuration.
+message ConfigureRequest {
+  // Configuration settings as key-value pairs.
+  map<string, string> config = 1;
+}
+
+message ConfigureResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+// Request and response for starting the data stream.
+message StartRequest {
+  // Optional parameters to begin streaming (e.g., start position).
+  map<string, string> parameters = 1;
+}
+
+message StartResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+// Request and response for stopping the data stream.
+message StopRequest {}
+
+message StopResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+// SourceService defines the RPC interface for a Source.
+service SourceService {
+  // Retrieve service capabilities.
+  rpc GetCapabilities(CapabilitiesRequest) returns (CapabilitiesResponse);
+  
+  // Configure the source with given settings.
+  rpc Configure(ConfigureRequest) returns (ConfigureResponse);
+  
+  // Start streaming data messages to the caller.
+  rpc StartStreaming(StartRequest) returns (stream DataMessage);
+  
+  // Stop streaming data.
+  rpc StopStreaming(StopRequest) returns (StopResponse);
+}
