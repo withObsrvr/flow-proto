@@ -1,0 +1,14 @@
+# Generated protocol buffer files
+*.pb.go
+
+# Go binary, testing, and specific IDE folders/files
+/bin/
+/test_proto
+*.test
+*.out
+.idea/
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db 

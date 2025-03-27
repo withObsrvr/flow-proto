@@ -7,6 +7,7 @@
 package processor
 
 import (
+	_struct "github.com/golang/protobuf/ptypes/struct"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -22,15 +23,233 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Optional validation mode
+type ConfigureRequest_ValidationMode int32
+
+const (
+	ConfigureRequest_VALIDATE_AND_APPLY ConfigureRequest_ValidationMode = 0
+	ConfigureRequest_VALIDATE_ONLY      ConfigureRequest_ValidationMode = 1
+)
+
+// Enum value maps for ConfigureRequest_ValidationMode.
+var (
+	ConfigureRequest_ValidationMode_name = map[int32]string{
+		0: "VALIDATE_AND_APPLY",
+		1: "VALIDATE_ONLY",
+	}
+	ConfigureRequest_ValidationMode_value = map[string]int32{
+		"VALIDATE_AND_APPLY": 0,
+		"VALIDATE_ONLY":      1,
+	}
+)
+
+func (x ConfigureRequest_ValidationMode) Enum() *ConfigureRequest_ValidationMode {
+	p := new(ConfigureRequest_ValidationMode)
+	*p = x
+	return p
+}
+
+func (x ConfigureRequest_ValidationMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ConfigureRequest_ValidationMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_processor_processor_proto_enumTypes[0].Descriptor()
+}
+
+func (ConfigureRequest_ValidationMode) Type() protoreflect.EnumType {
+	return &file_proto_processor_processor_proto_enumTypes[0]
+}
+
+func (x ConfigureRequest_ValidationMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ConfigureRequest_ValidationMode.Descriptor instead.
+func (ConfigureRequest_ValidationMode) EnumDescriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{3, 0}
+}
+
+type ValidationIssue_Severity int32
+
+const (
+	ValidationIssue_ERROR   ValidationIssue_Severity = 0
+	ValidationIssue_WARNING ValidationIssue_Severity = 1
+	ValidationIssue_INFO    ValidationIssue_Severity = 2
+)
+
+// Enum value maps for ValidationIssue_Severity.
+var (
+	ValidationIssue_Severity_name = map[int32]string{
+		0: "ERROR",
+		1: "WARNING",
+		2: "INFO",
+	}
+	ValidationIssue_Severity_value = map[string]int32{
+		"ERROR":   0,
+		"WARNING": 1,
+		"INFO":    2,
+	}
+)
+
+func (x ValidationIssue_Severity) Enum() *ValidationIssue_Severity {
+	p := new(ValidationIssue_Severity)
+	*p = x
+	return p
+}
+
+func (x ValidationIssue_Severity) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ValidationIssue_Severity) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_processor_processor_proto_enumTypes[1].Descriptor()
+}
+
+func (ValidationIssue_Severity) Type() protoreflect.EnumType {
+	return &file_proto_processor_processor_proto_enumTypes[1]
+}
+
+func (x ValidationIssue_Severity) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ValidationIssue_Severity.Descriptor instead.
+func (ValidationIssue_Severity) EnumDescriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{5, 0}
+}
+
+type HealthCheckResponse_ServingStatus int32
+
+const (
+	HealthCheckResponse_UNKNOWN         HealthCheckResponse_ServingStatus = 0
+	HealthCheckResponse_SERVING         HealthCheckResponse_ServingStatus = 1
+	HealthCheckResponse_NOT_SERVING     HealthCheckResponse_ServingStatus = 2
+	HealthCheckResponse_SERVICE_UNKNOWN HealthCheckResponse_ServingStatus = 3
+	HealthCheckResponse_STARTING        HealthCheckResponse_ServingStatus = 4
+	HealthCheckResponse_STOPPING        HealthCheckResponse_ServingStatus = 5
+)
+
+// Enum value maps for HealthCheckResponse_ServingStatus.
+var (
+	HealthCheckResponse_ServingStatus_name = map[int32]string{
+		0: "UNKNOWN",
+		1: "SERVING",
+		2: "NOT_SERVING",
+		3: "SERVICE_UNKNOWN",
+		4: "STARTING",
+		5: "STOPPING",
+	}
+	HealthCheckResponse_ServingStatus_value = map[string]int32{
+		"UNKNOWN":         0,
+		"SERVING":         1,
+		"NOT_SERVING":     2,
+		"SERVICE_UNKNOWN": 3,
+		"STARTING":        4,
+		"STOPPING":        5,
+	}
+)
+
+func (x HealthCheckResponse_ServingStatus) Enum() *HealthCheckResponse_ServingStatus {
+	p := new(HealthCheckResponse_ServingStatus)
+	*p = x
+	return p
+}
+
+func (x HealthCheckResponse_ServingStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (HealthCheckResponse_ServingStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_processor_processor_proto_enumTypes[2].Descriptor()
+}
+
+func (HealthCheckResponse_ServingStatus) Type() protoreflect.EnumType {
+	return &file_proto_processor_processor_proto_enumTypes[2]
+}
+
+func (x HealthCheckResponse_ServingStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use HealthCheckResponse_ServingStatus.Descriptor instead.
+func (HealthCheckResponse_ServingStatus) EnumDescriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{10, 0}
+}
+
+type ProcessControlMessage_ControlType int32
+
+const (
+	ProcessControlMessage_START       ProcessControlMessage_ControlType = 0 // Start a new processing session
+	ProcessControlMessage_PAUSE       ProcessControlMessage_ControlType = 1 // Pause processing
+	ProcessControlMessage_RESUME      ProcessControlMessage_ControlType = 2 // Resume processing
+	ProcessControlMessage_FLUSH       ProcessControlMessage_ControlType = 3 // Flush any pending messages
+	ProcessControlMessage_ACKNOWLEDGE ProcessControlMessage_ControlType = 4 // Acknowledge receipt
+	ProcessControlMessage_ERROR       ProcessControlMessage_ControlType = 5 // Signal an error
+)
+
+// Enum value maps for ProcessControlMessage_ControlType.
+var (
+	ProcessControlMessage_ControlType_name = map[int32]string{
+		0: "START",
+		1: "PAUSE",
+		2: "RESUME",
+		3: "FLUSH",
+		4: "ACKNOWLEDGE",
+		5: "ERROR",
+	}
+	ProcessControlMessage_ControlType_value = map[string]int32{
+		"START":       0,
+		"PAUSE":       1,
+		"RESUME":      2,
+		"FLUSH":       3,
+		"ACKNOWLEDGE": 4,
+		"ERROR":       5,
+	}
+)
+
+func (x ProcessControlMessage_ControlType) Enum() *ProcessControlMessage_ControlType {
+	p := new(ProcessControlMessage_ControlType)
+	*p = x
+	return p
+}
+
+func (x ProcessControlMessage_ControlType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProcessControlMessage_ControlType) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_processor_processor_proto_enumTypes[3].Descriptor()
+}
+
+func (ProcessControlMessage_ControlType) Type() protoreflect.EnumType {
+	return &file_proto_processor_processor_proto_enumTypes[3]
+}
+
+func (x ProcessControlMessage_ControlType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProcessControlMessage_ControlType.Descriptor instead.
+func (ProcessControlMessage_ControlType) EnumDescriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{12, 0}
+}
+
 // DataMessage represents the basic message exchanged with the processor.
 type DataMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The raw data payload.
 	Payload []byte `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-	// Key-value metadata associated with the message.
-	Metadata map[string]string `protobuf:"bytes,2,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Rich metadata using structured data
+	Metadata *_struct.Struct `protobuf:"bytes,2,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// The time at which the message was created.
-	Timestamp     *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// Content type of the payload (e.g., "application/json", "stellar/xdr")
+	ContentType string `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	// Unique message identifier
+	MessageId string `protobuf:"bytes,5,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+	// Source information (e.g., ledger sequence, transaction ID)
+	SourceInfo    *_struct.Struct `protobuf:"bytes,6,opt,name=source_info,json=sourceInfo,proto3" json:"source_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -72,7 +291,7 @@ func (x *DataMessage) GetPayload() []byte {
 	return nil
 }
 
-func (x *DataMessage) GetMetadata() map[string]string {
+func (x *DataMessage) GetMetadata() *_struct.Struct {
 	if x != nil {
 		return x.Metadata
 	}
@@ -86,9 +305,32 @@ func (x *DataMessage) GetTimestamp() *timestamp.Timestamp {
 	return nil
 }
 
-// CapabilitiesRequest is empty since no parameters are needed.
+func (x *DataMessage) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *DataMessage) GetMessageId() string {
+	if x != nil {
+		return x.MessageId
+	}
+	return ""
+}
+
+func (x *DataMessage) GetSourceInfo() *_struct.Struct {
+	if x != nil {
+		return x.SourceInfo
+	}
+	return nil
+}
+
+// CapabilitiesRequest can include context about the client
 type CapabilitiesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional client information
+	ClientInfo    map[string]string `protobuf:"bytes,1,rep,name=client_info,json=clientInfo,proto3" json:"client_info,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -123,14 +365,27 @@ func (*CapabilitiesRequest) Descriptor() ([]byte, []int) {
 	return file_proto_processor_processor_proto_rawDescGZIP(), []int{1}
 }
 
+func (x *CapabilitiesRequest) GetClientInfo() map[string]string {
+	if x != nil {
+		return x.ClientInfo
+	}
+	return nil
+}
+
 // CapabilitiesResponse reports the processor's capabilities.
 type CapabilitiesResponse struct {
 	state             protoimpl.MessageState `protogen:"open.v1"`
 	ServiceName       string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
 	ServiceVersion    string                 `protobuf:"bytes,2,opt,name=service_version,json=serviceVersion,proto3" json:"service_version,omitempty"`
 	SupportedFeatures []string               `protobuf:"bytes,3,rep,name=supported_features,json=supportedFeatures,proto3" json:"supported_features,omitempty"`
-	// Additional capabilities can be provided as key-value pairs.
-	Capabilities  map[string]string `protobuf:"bytes,4,rep,name=capabilities,proto3" json:"capabilities,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Rich capabilities information
+	Capabilities *_struct.Struct `protobuf:"bytes,4,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	// Input formats this processor can handle
+	SupportedInputFormats []string `protobuf:"bytes,5,rep,name=supported_input_formats,json=supportedInputFormats,proto3" json:"supported_input_formats,omitempty"`
+	// Output formats this processor can produce
+	SupportedOutputFormats []string `protobuf:"bytes,6,rep,name=supported_output_formats,json=supportedOutputFormats,proto3" json:"supported_output_formats,omitempty"`
+	// Configuration schema for validation
+	ConfigSchema  *_struct.Struct `protobuf:"bytes,7,opt,name=config_schema,json=configSchema,proto3" json:"config_schema,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -186,19 +441,42 @@ func (x *CapabilitiesResponse) GetSupportedFeatures() []string {
 	return nil
 }
 
-func (x *CapabilitiesResponse) GetCapabilities() map[string]string {
+func (x *CapabilitiesResponse) GetCapabilities() *_struct.Struct {
 	if x != nil {
 		return x.Capabilities
 	}
 	return nil
 }
 
-// ConfigureRequest carries configuration settings as key-value pairs.
+func (x *CapabilitiesResponse) GetSupportedInputFormats() []string {
+	if x != nil {
+		return x.SupportedInputFormats
+	}
+	return nil
+}
+
+func (x *CapabilitiesResponse) GetSupportedOutputFormats() []string {
+	if x != nil {
+		return x.SupportedOutputFormats
+	}
+	return nil
+}
+
+func (x *CapabilitiesResponse) GetConfigSchema() *_struct.Struct {
+	if x != nil {
+		return x.ConfigSchema
+	}
+	return nil
+}
+
+// Enhanced configuration with structured data
 type ConfigureRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Config        map[string]string      `protobuf:"bytes,1,rep,name=config,proto3" json:"config,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Configuration as structured data
+	Config         *_struct.Struct                 `protobuf:"bytes,1,opt,name=config,proto3" json:"config,omitempty"`
+	ValidationMode ConfigureRequest_ValidationMode `protobuf:"varint,2,opt,name=validation_mode,json=validationMode,proto3,enum=processor.ConfigureRequest_ValidationMode" json:"validation_mode,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ConfigureRequest) Reset() {
@@ -231,18 +509,29 @@ func (*ConfigureRequest) Descriptor() ([]byte, []int) {
 	return file_proto_processor_processor_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *ConfigureRequest) GetConfig() map[string]string {
+func (x *ConfigureRequest) GetConfig() *_struct.Struct {
 	if x != nil {
 		return x.Config
 	}
 	return nil
 }
 
-// ConfigureResponse returns success status and an optional error message.
+func (x *ConfigureRequest) GetValidationMode() ConfigureRequest_ValidationMode {
+	if x != nil {
+		return x.ValidationMode
+	}
+	return ConfigureRequest_VALIDATE_AND_APPLY
+}
+
+// Enhanced configuration response
 type ConfigureResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	ErrorMessage  string                 `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	Success      bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	ErrorMessage string                 `protobuf:"bytes,2,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	// Detailed validation issues
+	ValidationIssues []*ValidationIssue `protobuf:"bytes,3,rep,name=validation_issues,json=validationIssues,proto3" json:"validation_issues,omitempty"`
+	// Current configuration after changes
+	CurrentConfig *_struct.Struct `protobuf:"bytes,4,opt,name=current_config,json=currentConfig,proto3" json:"current_config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -291,39 +580,596 @@ func (x *ConfigureResponse) GetErrorMessage() string {
 	return ""
 }
 
+func (x *ConfigureResponse) GetValidationIssues() []*ValidationIssue {
+	if x != nil {
+		return x.ValidationIssues
+	}
+	return nil
+}
+
+func (x *ConfigureResponse) GetCurrentConfig() *_struct.Struct {
+	if x != nil {
+		return x.CurrentConfig
+	}
+	return nil
+}
+
+// Validation issue details
+type ValidationIssue struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Severity      ValidationIssue_Severity `protobuf:"varint,1,opt,name=severity,proto3,enum=processor.ValidationIssue_Severity" json:"severity,omitempty"`
+	Field         string                   `protobuf:"bytes,2,opt,name=field,proto3" json:"field,omitempty"`
+	Message       string                   `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidationIssue) Reset() {
+	*x = ValidationIssue{}
+	mi := &file_proto_processor_processor_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidationIssue) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidationIssue) ProtoMessage() {}
+
+func (x *ValidationIssue) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidationIssue.ProtoReflect.Descriptor instead.
+func (*ValidationIssue) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ValidationIssue) GetSeverity() ValidationIssue_Severity {
+	if x != nil {
+		return x.Severity
+	}
+	return ValidationIssue_ERROR
+}
+
+func (x *ValidationIssue) GetField() string {
+	if x != nil {
+		return x.Field
+	}
+	return ""
+}
+
+func (x *ValidationIssue) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+// Error information for detailed error reporting
+type ErrorInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Error type (e.g., "config", "network", "processing")
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	// Error severity (e.g., "fatal", "warning", "info")
+	Severity string `protobuf:"bytes,2,opt,name=severity,proto3" json:"severity,omitempty"`
+	// Error message
+	Message string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	// Context information
+	Context       *_struct.Struct `protobuf:"bytes,4,opt,name=context,proto3" json:"context,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ErrorInfo) Reset() {
+	*x = ErrorInfo{}
+	mi := &file_proto_processor_processor_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ErrorInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ErrorInfo) ProtoMessage() {}
+
+func (x *ErrorInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ErrorInfo.ProtoReflect.Descriptor instead.
+func (*ErrorInfo) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ErrorInfo) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *ErrorInfo) GetSeverity() string {
+	if x != nil {
+		return x.Severity
+	}
+	return ""
+}
+
+func (x *ErrorInfo) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ErrorInfo) GetContext() *_struct.Struct {
+	if x != nil {
+		return x.Context
+	}
+	return nil
+}
+
+// State request message
+type GetStateRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional state key or namespace
+	StateKey      string `protobuf:"bytes,1,opt,name=state_key,json=stateKey,proto3" json:"state_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetStateRequest) Reset() {
+	*x = GetStateRequest{}
+	mi := &file_proto_processor_processor_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetStateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetStateRequest) ProtoMessage() {}
+
+func (x *GetStateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetStateRequest.ProtoReflect.Descriptor instead.
+func (*GetStateRequest) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetStateRequest) GetStateKey() string {
+	if x != nil {
+		return x.StateKey
+	}
+	return ""
+}
+
+// State response message
+type GetStateResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// State data as structured information
+	State *_struct.Struct `protobuf:"bytes,1,opt,name=state,proto3" json:"state,omitempty"`
+	// Last update timestamp
+	LastUpdated   *timestamp.Timestamp `protobuf:"bytes,2,opt,name=last_updated,json=lastUpdated,proto3" json:"last_updated,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetStateResponse) Reset() {
+	*x = GetStateResponse{}
+	mi := &file_proto_processor_processor_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetStateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetStateResponse) ProtoMessage() {}
+
+func (x *GetStateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetStateResponse.ProtoReflect.Descriptor instead.
+func (*GetStateResponse) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetStateResponse) GetState() *_struct.Struct {
+	if x != nil {
+		return x.State
+	}
+	return nil
+}
+
+func (x *GetStateResponse) GetLastUpdated() *timestamp.Timestamp {
+	if x != nil {
+		return x.LastUpdated
+	}
+	return nil
+}
+
+// Health check request
+type HealthCheckRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Request detailed health information
+	Detailed      bool `protobuf:"varint,1,opt,name=detailed,proto3" json:"detailed,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthCheckRequest) Reset() {
+	*x = HealthCheckRequest{}
+	mi := &file_proto_processor_processor_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthCheckRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckRequest) ProtoMessage() {}
+
+func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
+func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *HealthCheckRequest) GetDetailed() bool {
+	if x != nil {
+		return x.Detailed
+	}
+	return false
+}
+
+// Health check response
+type HealthCheckResponse struct {
+	state  protoimpl.MessageState            `protogen:"open.v1"`
+	Status HealthCheckResponse_ServingStatus `protobuf:"varint,1,opt,name=status,proto3,enum=processor.HealthCheckResponse_ServingStatus" json:"status,omitempty"`
+	// Detailed component health states
+	Components []*ComponentHealth `protobuf:"bytes,2,rep,name=components,proto3" json:"components,omitempty"`
+	// Current metrics
+	Metrics       *_struct.Struct `protobuf:"bytes,3,opt,name=metrics,proto3" json:"metrics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthCheckResponse) Reset() {
+	*x = HealthCheckResponse{}
+	mi := &file_proto_processor_processor_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthCheckResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckResponse) ProtoMessage() {}
+
+func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
+func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *HealthCheckResponse) GetStatus() HealthCheckResponse_ServingStatus {
+	if x != nil {
+		return x.Status
+	}
+	return HealthCheckResponse_UNKNOWN
+}
+
+func (x *HealthCheckResponse) GetComponents() []*ComponentHealth {
+	if x != nil {
+		return x.Components
+	}
+	return nil
+}
+
+func (x *HealthCheckResponse) GetMetrics() *_struct.Struct {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+// Component health information
+type ComponentHealth struct {
+	state         protoimpl.MessageState            `protogen:"open.v1"`
+	ComponentName string                            `protobuf:"bytes,1,opt,name=component_name,json=componentName,proto3" json:"component_name,omitempty"`
+	Status        HealthCheckResponse_ServingStatus `protobuf:"varint,2,opt,name=status,proto3,enum=processor.HealthCheckResponse_ServingStatus" json:"status,omitempty"`
+	Message       string                            `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ComponentHealth) Reset() {
+	*x = ComponentHealth{}
+	mi := &file_proto_processor_processor_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComponentHealth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComponentHealth) ProtoMessage() {}
+
+func (x *ComponentHealth) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComponentHealth.ProtoReflect.Descriptor instead.
+func (*ComponentHealth) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ComponentHealth) GetComponentName() string {
+	if x != nil {
+		return x.ComponentName
+	}
+	return ""
+}
+
+func (x *ComponentHealth) GetStatus() HealthCheckResponse_ServingStatus {
+	if x != nil {
+		return x.Status
+	}
+	return HealthCheckResponse_UNKNOWN
+}
+
+func (x *ComponentHealth) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+// Message for batch processing control
+type ProcessControlMessage struct {
+	state       protoimpl.MessageState            `protogen:"open.v1"`
+	ControlType ProcessControlMessage_ControlType `protobuf:"varint,1,opt,name=control_type,json=controlType,proto3,enum=processor.ProcessControlMessage_ControlType" json:"control_type,omitempty"`
+	// Control parameters
+	Parameters *_struct.Struct `protobuf:"bytes,2,opt,name=parameters,proto3" json:"parameters,omitempty"`
+	// Error information if control_type is ERROR
+	Error *ErrorInfo `protobuf:"bytes,3,opt,name=error,proto3" json:"error,omitempty"`
+	// Correlation ID for matching requests with responses
+	CorrelationId string `protobuf:"bytes,4,opt,name=correlation_id,json=correlationId,proto3" json:"correlation_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProcessControlMessage) Reset() {
+	*x = ProcessControlMessage{}
+	mi := &file_proto_processor_processor_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProcessControlMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProcessControlMessage) ProtoMessage() {}
+
+func (x *ProcessControlMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_processor_processor_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProcessControlMessage.ProtoReflect.Descriptor instead.
+func (*ProcessControlMessage) Descriptor() ([]byte, []int) {
+	return file_proto_processor_processor_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ProcessControlMessage) GetControlType() ProcessControlMessage_ControlType {
+	if x != nil {
+		return x.ControlType
+	}
+	return ProcessControlMessage_START
+}
+
+func (x *ProcessControlMessage) GetParameters() *_struct.Struct {
+	if x != nil {
+		return x.Parameters
+	}
+	return nil
+}
+
+func (x *ProcessControlMessage) GetError() *ErrorInfo {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
+func (x *ProcessControlMessage) GetCorrelationId() string {
+	if x != nil {
+		return x.CorrelationId
+	}
+	return ""
+}
+
 var File_proto_processor_processor_proto protoreflect.FileDescriptor
 
 const file_proto_processor_processor_proto_rawDesc = "" +
 	"\n" +
-	"\x1fproto/processor/processor.proto\x12\tprocessor\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x01\n" +
+	"\x1fproto/processor/processor.proto\x12\tprocessor\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x92\x02\n" +
 	"\vDataMessage\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\fR\apayload\x12@\n" +
-	"\bmetadata\x18\x02 \x03(\v2$.processor.DataMessage.MetadataEntryR\bmetadata\x128\n" +
-	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x1a;\n" +
-	"\rMetadataEntry\x12\x10\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\x123\n" +
+	"\bmetadata\x18\x02 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x128\n" +
+	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12!\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\x12\x1d\n" +
+	"\n" +
+	"message_id\x18\x05 \x01(\tR\tmessageId\x128\n" +
+	"\vsource_info\x18\x06 \x01(\v2\x17.google.protobuf.StructR\n" +
+	"sourceInfo\"\xa5\x01\n" +
+	"\x13CapabilitiesRequest\x12O\n" +
+	"\vclient_info\x18\x01 \x03(\v2..processor.CapabilitiesRequest.ClientInfoEntryR\n" +
+	"clientInfo\x1a=\n" +
+	"\x0fClientInfoEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x15\n" +
-	"\x13CapabilitiesRequest\"\xa9\x02\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xfe\x02\n" +
 	"\x14CapabilitiesResponse\x12!\n" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12'\n" +
 	"\x0fservice_version\x18\x02 \x01(\tR\x0eserviceVersion\x12-\n" +
-	"\x12supported_features\x18\x03 \x03(\tR\x11supportedFeatures\x12U\n" +
-	"\fcapabilities\x18\x04 \x03(\v21.processor.CapabilitiesResponse.CapabilitiesEntryR\fcapabilities\x1a?\n" +
-	"\x11CapabilitiesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x8e\x01\n" +
-	"\x10ConfigureRequest\x12?\n" +
-	"\x06config\x18\x01 \x03(\v2'.processor.ConfigureRequest.ConfigEntryR\x06config\x1a9\n" +
-	"\vConfigEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
+	"\x12supported_features\x18\x03 \x03(\tR\x11supportedFeatures\x12;\n" +
+	"\fcapabilities\x18\x04 \x01(\v2\x17.google.protobuf.StructR\fcapabilities\x126\n" +
+	"\x17supported_input_formats\x18\x05 \x03(\tR\x15supportedInputFormats\x128\n" +
+	"\x18supported_output_formats\x18\x06 \x03(\tR\x16supportedOutputFormats\x12<\n" +
+	"\rconfig_schema\x18\a \x01(\v2\x17.google.protobuf.StructR\fconfigSchema\"\xd5\x01\n" +
+	"\x10ConfigureRequest\x12/\n" +
+	"\x06config\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x06config\x12S\n" +
+	"\x0fvalidation_mode\x18\x02 \x01(\x0e2*.processor.ConfigureRequest.ValidationModeR\x0evalidationMode\";\n" +
+	"\x0eValidationMode\x12\x16\n" +
+	"\x12VALIDATE_AND_APPLY\x10\x00\x12\x11\n" +
+	"\rVALIDATE_ONLY\x10\x01\"\xdb\x01\n" +
 	"\x11ConfigureResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12#\n" +
-	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage2\xed\x01\n" +
+	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\x12G\n" +
+	"\x11validation_issues\x18\x03 \x03(\v2\x1a.processor.ValidationIssueR\x10validationIssues\x12>\n" +
+	"\x0ecurrent_config\x18\x04 \x01(\v2\x17.google.protobuf.StructR\rcurrentConfig\"\xb0\x01\n" +
+	"\x0fValidationIssue\x12?\n" +
+	"\bseverity\x18\x01 \x01(\x0e2#.processor.ValidationIssue.SeverityR\bseverity\x12\x14\n" +
+	"\x05field\x18\x02 \x01(\tR\x05field\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\",\n" +
+	"\bSeverity\x12\t\n" +
+	"\x05ERROR\x10\x00\x12\v\n" +
+	"\aWARNING\x10\x01\x12\b\n" +
+	"\x04INFO\x10\x02\"\x88\x01\n" +
+	"\tErrorInfo\x12\x12\n" +
+	"\x04type\x18\x01 \x01(\tR\x04type\x12\x1a\n" +
+	"\bseverity\x18\x02 \x01(\tR\bseverity\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x121\n" +
+	"\acontext\x18\x04 \x01(\v2\x17.google.protobuf.StructR\acontext\".\n" +
+	"\x0fGetStateRequest\x12\x1b\n" +
+	"\tstate_key\x18\x01 \x01(\tR\bstateKey\"\x80\x01\n" +
+	"\x10GetStateResponse\x12-\n" +
+	"\x05state\x18\x01 \x01(\v2\x17.google.protobuf.StructR\x05state\x12=\n" +
+	"\flast_updated\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\vlastUpdated\"0\n" +
+	"\x12HealthCheckRequest\x12\x1a\n" +
+	"\bdetailed\x18\x01 \x01(\bR\bdetailed\"\xb7\x02\n" +
+	"\x13HealthCheckResponse\x12D\n" +
+	"\x06status\x18\x01 \x01(\x0e2,.processor.HealthCheckResponse.ServingStatusR\x06status\x12:\n" +
+	"\n" +
+	"components\x18\x02 \x03(\v2\x1a.processor.ComponentHealthR\n" +
+	"components\x121\n" +
+	"\ametrics\x18\x03 \x01(\v2\x17.google.protobuf.StructR\ametrics\"k\n" +
+	"\rServingStatus\x12\v\n" +
+	"\aUNKNOWN\x10\x00\x12\v\n" +
+	"\aSERVING\x10\x01\x12\x0f\n" +
+	"\vNOT_SERVING\x10\x02\x12\x13\n" +
+	"\x0fSERVICE_UNKNOWN\x10\x03\x12\f\n" +
+	"\bSTARTING\x10\x04\x12\f\n" +
+	"\bSTOPPING\x10\x05\"\x98\x01\n" +
+	"\x0fComponentHealth\x12%\n" +
+	"\x0ecomponent_name\x18\x01 \x01(\tR\rcomponentName\x12D\n" +
+	"\x06status\x18\x02 \x01(\x0e2,.processor.HealthCheckResponse.ServingStatusR\x06status\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\xcc\x02\n" +
+	"\x15ProcessControlMessage\x12O\n" +
+	"\fcontrol_type\x18\x01 \x01(\x0e2,.processor.ProcessControlMessage.ControlTypeR\vcontrolType\x127\n" +
+	"\n" +
+	"parameters\x18\x02 \x01(\v2\x17.google.protobuf.StructR\n" +
+	"parameters\x12*\n" +
+	"\x05error\x18\x03 \x01(\v2\x14.processor.ErrorInfoR\x05error\x12%\n" +
+	"\x0ecorrelation_id\x18\x04 \x01(\tR\rcorrelationId\"V\n" +
+	"\vControlType\x12\t\n" +
+	"\x05START\x10\x00\x12\t\n" +
+	"\x05PAUSE\x10\x01\x12\n" +
+	"\n" +
+	"\x06RESUME\x10\x02\x12\t\n" +
+	"\x05FLUSH\x10\x03\x12\x0f\n" +
+	"\vACKNOWLEDGE\x10\x04\x12\t\n" +
+	"\x05ERROR\x10\x052\x9f\x04\n" +
 	"\x10ProcessorService\x12R\n" +
 	"\x0fGetCapabilities\x12\x1e.processor.CapabilitiesRequest\x1a\x1f.processor.CapabilitiesResponse\x12F\n" +
 	"\tConfigure\x12\x1b.processor.ConfigureRequest\x1a\x1c.processor.ConfigureResponse\x12=\n" +
-	"\aProcess\x12\x16.processor.DataMessage\x1a\x16.processor.DataMessage(\x010\x01B2Z0github.com/withObsrvr/flow-proto/proto/processorb\x06proto3"
+	"\aProcess\x12\x16.processor.DataMessage\x1a\x16.processor.DataMessage(\x010\x01\x12\\\n" +
+	"\x12ProcessWithControl\x12 .processor.ProcessControlMessage\x1a .processor.ProcessControlMessage(\x010\x01\x12C\n" +
+	"\bGetState\x12\x1a.processor.GetStateRequest\x1a\x1b.processor.GetStateResponse\x12L\n" +
+	"\vCheckHealth\x12\x1d.processor.HealthCheckRequest\x1a\x1e.processor.HealthCheckResponse\x12?\n" +
+	"\rProcessSingle\x12\x16.processor.DataMessage\x1a\x16.processor.DataMessageB2Z0github.com/withObsrvr/flow-proto/proto/processorb\x06proto3"
 
 var (
 	file_proto_processor_processor_proto_rawDescOnce sync.Once
@@ -337,34 +1183,71 @@ func file_proto_processor_processor_proto_rawDescGZIP() []byte {
 	return file_proto_processor_processor_proto_rawDescData
 }
 
-var file_proto_processor_processor_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_proto_processor_processor_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_proto_processor_processor_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_proto_processor_processor_proto_goTypes = []any{
-	(*DataMessage)(nil),          // 0: processor.DataMessage
-	(*CapabilitiesRequest)(nil),  // 1: processor.CapabilitiesRequest
-	(*CapabilitiesResponse)(nil), // 2: processor.CapabilitiesResponse
-	(*ConfigureRequest)(nil),     // 3: processor.ConfigureRequest
-	(*ConfigureResponse)(nil),    // 4: processor.ConfigureResponse
-	nil,                          // 5: processor.DataMessage.MetadataEntry
-	nil,                          // 6: processor.CapabilitiesResponse.CapabilitiesEntry
-	nil,                          // 7: processor.ConfigureRequest.ConfigEntry
-	(*timestamp.Timestamp)(nil),  // 8: google.protobuf.Timestamp
+	(ConfigureRequest_ValidationMode)(0),   // 0: processor.ConfigureRequest.ValidationMode
+	(ValidationIssue_Severity)(0),          // 1: processor.ValidationIssue.Severity
+	(HealthCheckResponse_ServingStatus)(0), // 2: processor.HealthCheckResponse.ServingStatus
+	(ProcessControlMessage_ControlType)(0), // 3: processor.ProcessControlMessage.ControlType
+	(*DataMessage)(nil),                    // 4: processor.DataMessage
+	(*CapabilitiesRequest)(nil),            // 5: processor.CapabilitiesRequest
+	(*CapabilitiesResponse)(nil),           // 6: processor.CapabilitiesResponse
+	(*ConfigureRequest)(nil),               // 7: processor.ConfigureRequest
+	(*ConfigureResponse)(nil),              // 8: processor.ConfigureResponse
+	(*ValidationIssue)(nil),                // 9: processor.ValidationIssue
+	(*ErrorInfo)(nil),                      // 10: processor.ErrorInfo
+	(*GetStateRequest)(nil),                // 11: processor.GetStateRequest
+	(*GetStateResponse)(nil),               // 12: processor.GetStateResponse
+	(*HealthCheckRequest)(nil),             // 13: processor.HealthCheckRequest
+	(*HealthCheckResponse)(nil),            // 14: processor.HealthCheckResponse
+	(*ComponentHealth)(nil),                // 15: processor.ComponentHealth
+	(*ProcessControlMessage)(nil),          // 16: processor.ProcessControlMessage
+	nil,                                    // 17: processor.CapabilitiesRequest.ClientInfoEntry
+	(*_struct.Struct)(nil),                 // 18: google.protobuf.Struct
+	(*timestamp.Timestamp)(nil),            // 19: google.protobuf.Timestamp
 }
 var file_proto_processor_processor_proto_depIdxs = []int32{
-	5, // 0: processor.DataMessage.metadata:type_name -> processor.DataMessage.MetadataEntry
-	8, // 1: processor.DataMessage.timestamp:type_name -> google.protobuf.Timestamp
-	6, // 2: processor.CapabilitiesResponse.capabilities:type_name -> processor.CapabilitiesResponse.CapabilitiesEntry
-	7, // 3: processor.ConfigureRequest.config:type_name -> processor.ConfigureRequest.ConfigEntry
-	1, // 4: processor.ProcessorService.GetCapabilities:input_type -> processor.CapabilitiesRequest
-	3, // 5: processor.ProcessorService.Configure:input_type -> processor.ConfigureRequest
-	0, // 6: processor.ProcessorService.Process:input_type -> processor.DataMessage
-	2, // 7: processor.ProcessorService.GetCapabilities:output_type -> processor.CapabilitiesResponse
-	4, // 8: processor.ProcessorService.Configure:output_type -> processor.ConfigureResponse
-	0, // 9: processor.ProcessorService.Process:output_type -> processor.DataMessage
-	7, // [7:10] is the sub-list for method output_type
-	4, // [4:7] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	18, // 0: processor.DataMessage.metadata:type_name -> google.protobuf.Struct
+	19, // 1: processor.DataMessage.timestamp:type_name -> google.protobuf.Timestamp
+	18, // 2: processor.DataMessage.source_info:type_name -> google.protobuf.Struct
+	17, // 3: processor.CapabilitiesRequest.client_info:type_name -> processor.CapabilitiesRequest.ClientInfoEntry
+	18, // 4: processor.CapabilitiesResponse.capabilities:type_name -> google.protobuf.Struct
+	18, // 5: processor.CapabilitiesResponse.config_schema:type_name -> google.protobuf.Struct
+	18, // 6: processor.ConfigureRequest.config:type_name -> google.protobuf.Struct
+	0,  // 7: processor.ConfigureRequest.validation_mode:type_name -> processor.ConfigureRequest.ValidationMode
+	9,  // 8: processor.ConfigureResponse.validation_issues:type_name -> processor.ValidationIssue
+	18, // 9: processor.ConfigureResponse.current_config:type_name -> google.protobuf.Struct
+	1,  // 10: processor.ValidationIssue.severity:type_name -> processor.ValidationIssue.Severity
+	18, // 11: processor.ErrorInfo.context:type_name -> google.protobuf.Struct
+	18, // 12: processor.GetStateResponse.state:type_name -> google.protobuf.Struct
+	19, // 13: processor.GetStateResponse.last_updated:type_name -> google.protobuf.Timestamp
+	2,  // 14: processor.HealthCheckResponse.status:type_name -> processor.HealthCheckResponse.ServingStatus
+	15, // 15: processor.HealthCheckResponse.components:type_name -> processor.ComponentHealth
+	18, // 16: processor.HealthCheckResponse.metrics:type_name -> google.protobuf.Struct
+	2,  // 17: processor.ComponentHealth.status:type_name -> processor.HealthCheckResponse.ServingStatus
+	3,  // 18: processor.ProcessControlMessage.control_type:type_name -> processor.ProcessControlMessage.ControlType
+	18, // 19: processor.ProcessControlMessage.parameters:type_name -> google.protobuf.Struct
+	10, // 20: processor.ProcessControlMessage.error:type_name -> processor.ErrorInfo
+	5,  // 21: processor.ProcessorService.GetCapabilities:input_type -> processor.CapabilitiesRequest
+	7,  // 22: processor.ProcessorService.Configure:input_type -> processor.ConfigureRequest
+	4,  // 23: processor.ProcessorService.Process:input_type -> processor.DataMessage
+	16, // 24: processor.ProcessorService.ProcessWithControl:input_type -> processor.ProcessControlMessage
+	11, // 25: processor.ProcessorService.GetState:input_type -> processor.GetStateRequest
+	13, // 26: processor.ProcessorService.CheckHealth:input_type -> processor.HealthCheckRequest
+	4,  // 27: processor.ProcessorService.ProcessSingle:input_type -> processor.DataMessage
+	6,  // 28: processor.ProcessorService.GetCapabilities:output_type -> processor.CapabilitiesResponse
+	8,  // 29: processor.ProcessorService.Configure:output_type -> processor.ConfigureResponse
+	4,  // 30: processor.ProcessorService.Process:output_type -> processor.DataMessage
+	16, // 31: processor.ProcessorService.ProcessWithControl:output_type -> processor.ProcessControlMessage
+	12, // 32: processor.ProcessorService.GetState:output_type -> processor.GetStateResponse
+	14, // 33: processor.ProcessorService.CheckHealth:output_type -> processor.HealthCheckResponse
+	4,  // 34: processor.ProcessorService.ProcessSingle:output_type -> processor.DataMessage
+	28, // [28:35] is the sub-list for method output_type
+	21, // [21:28] is the sub-list for method input_type
+	21, // [21:21] is the sub-list for extension type_name
+	21, // [21:21] is the sub-list for extension extendee
+	0,  // [0:21] is the sub-list for field type_name
 }
 
 func init() { file_proto_processor_processor_proto_init() }
@@ -377,13 +1260,14 @@ func file_proto_processor_processor_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_processor_processor_proto_rawDesc), len(file_proto_processor_processor_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   8,
+			NumEnums:      4,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_proto_processor_processor_proto_goTypes,
 		DependencyIndexes: file_proto_processor_processor_proto_depIdxs,
+		EnumInfos:         file_proto_processor_processor_proto_enumTypes,
 		MessageInfos:      file_proto_processor_processor_proto_msgTypes,
 	}.Build()
 	File_proto_processor_processor_proto = out.File

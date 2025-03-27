@@ -3,6 +3,7 @@ syntax = "proto3";
 package processor;
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 option go_package = "github.com/withObsrvr/flow-proto/proto/processor";
 
@@ -11,45 +12,186 @@ message DataMessage {
   // The raw data payload.
   bytes payload = 1;
   
-  // Key-value metadata associated with the message.
-  map<string, string> metadata = 2;
+  // Rich metadata using structured data
+  google.protobuf.Struct metadata = 2;
   
   // The time at which the message was created.
   google.protobuf.Timestamp timestamp = 3;
+  
+  // Content type of the payload (e.g., "application/json", "stellar/xdr")
+  string content_type = 4;
+  
+  // Unique message identifier
+  string message_id = 5;
+  
+  // Source information (e.g., ledger sequence, transaction ID)
+  google.protobuf.Struct source_info = 6;
 }
 
-// CapabilitiesRequest is empty since no parameters are needed.
-message CapabilitiesRequest {}
+// CapabilitiesRequest can include context about the client
+message CapabilitiesRequest {
+  // Optional client information
+  map<string, string> client_info = 1;
+}
 
 // CapabilitiesResponse reports the processor's capabilities.
 message CapabilitiesResponse {
   string service_name = 1;
   string service_version = 2;
   repeated string supported_features = 3;
-  // Additional capabilities can be provided as key-value pairs.
-  map<string, string> capabilities = 4;
+  
+  // Rich capabilities information
+  google.protobuf.Struct capabilities = 4;
+  
+  // Input formats this processor can handle
+  repeated string supported_input_formats = 5;
+  
+  // Output formats this processor can produce
+  repeated string supported_output_formats = 6;
+  
+  // Configuration schema for validation
+  google.protobuf.Struct config_schema = 7;
 }
 
-// ConfigureRequest carries configuration settings as key-value pairs.
+// Enhanced configuration with structured data
 message ConfigureRequest {
-  map<string, string> config = 1;
+  // Configuration as structured data
+  google.protobuf.Struct config = 1;
+  
+  // Optional validation mode
+  enum ValidationMode {
+    VALIDATE_AND_APPLY = 0;
+    VALIDATE_ONLY = 1;
+  }
+  ValidationMode validation_mode = 2;
 }
 
-// ConfigureResponse returns success status and an optional error message.
+// Enhanced configuration response
 message ConfigureResponse {
   bool success = 1;
   string error_message = 2;
+  
+  // Detailed validation issues
+  repeated ValidationIssue validation_issues = 3;
+  
+  // Current configuration after changes
+  google.protobuf.Struct current_config = 4;
 }
 
-// ProcessorService defines the RPC interface for a processor.
-service ProcessorService {
-  // Retrieves the processor's capabilities.
-  rpc GetCapabilities(CapabilitiesRequest) returns (CapabilitiesResponse);
+// Validation issue details
+message ValidationIssue {
+  enum Severity {
+    ERROR = 0;
+    WARNING = 1;
+    INFO = 2;
+  }
+  Severity severity = 1;
+  string field = 2;
+  string message = 3;
+}
+
+// Error information for detailed error reporting
+message ErrorInfo {
+  // Error type (e.g., "config", "network", "processing")
+  string type = 1;
   
-  // Configures the processor with provided settings.
+  // Error severity (e.g., "fatal", "warning", "info")
+  string severity = 2;
+  
+  // Error message
+  string message = 3;
+  
+  // Context information
+  google.protobuf.Struct context = 4;
+}
+
+// State request message
+message GetStateRequest {
+  // Optional state key or namespace
+  string state_key = 1;
+}
+
+// State response message
+message GetStateResponse {
+  // State data as structured information
+  google.protobuf.Struct state = 1;
+  
+  // Last update timestamp
+  google.protobuf.Timestamp last_updated = 2;
+}
+
+// Health check request
+message HealthCheckRequest {
+  // Request detailed health information
+  bool detailed = 1;
+}
+
+// Health check response
+message HealthCheckResponse {
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+    STARTING = 4;
+    STOPPING = 5;
+  }
+  ServingStatus status = 1;
+  
+  // Detailed component health states
+  repeated ComponentHealth components = 2;
+  
+  // Current metrics
+  google.protobuf.Struct metrics = 3;
+}
+
+// Component health information
+message ComponentHealth {
+  string component_name = 1;
+  HealthCheckResponse.ServingStatus status = 2;
+  string message = 3;
+}
+
+// Message for batch processing control
+message ProcessControlMessage {
+  enum ControlType {
+    START = 0;      // Start a new processing session
+    PAUSE = 1;      // Pause processing
+    RESUME = 2;     // Resume processing
+    FLUSH = 3;      // Flush any pending messages
+    ACKNOWLEDGE = 4; // Acknowledge receipt
+    ERROR = 5;      // Signal an error
+  }
+  ControlType control_type = 1;
+  
+  // Control parameters
+  google.protobuf.Struct parameters = 2;
+  
+  // Error information if control_type is ERROR
+  ErrorInfo error = 3;
+  
+  // Correlation ID for matching requests with responses
+  string correlation_id = 4;
+}
+
+// ProcessorService defines the enhanced RPC interface for a processor.
+service ProcessorService {
+  // Basic operations
+  rpc GetCapabilities(CapabilitiesRequest) returns (CapabilitiesResponse);
   rpc Configure(ConfigureRequest) returns (ConfigureResponse);
   
-  // Processes incoming data messages and streams back the processed data.
-  // This is a bidirectional streaming RPC.
+  // Standard bidirectional streaming process
   rpc Process(stream DataMessage) returns (stream DataMessage);
-}
+  
+  // Enhanced bidirectional streaming with control messages
+  rpc ProcessWithControl(stream ProcessControlMessage) returns (stream ProcessControlMessage);
+  
+  // State management
+  rpc GetState(GetStateRequest) returns (GetStateResponse);
+  
+  // Health check
+  rpc CheckHealth(HealthCheckRequest) returns (HealthCheckResponse);
+  
+  // Single message processing (for simple cases)
+  rpc ProcessSingle(DataMessage) returns (DataMessage);
+} 

@@ -22,23 +22,33 @@ const (
 	ConsumerService_GetCapabilities_FullMethodName = "/consumer.ConsumerService/GetCapabilities"
 	ConsumerService_Configure_FullMethodName       = "/consumer.ConsumerService/Configure"
 	ConsumerService_Consume_FullMethodName         = "/consumer.ConsumerService/Consume"
+	ConsumerService_BatchConsume_FullMethodName    = "/consumer.ConsumerService/BatchConsume"
+	ConsumerService_StreamConsume_FullMethodName   = "/consumer.ConsumerService/StreamConsume"
+	ConsumerService_CheckHealth_FullMethodName     = "/consumer.ConsumerService/CheckHealth"
 	ConsumerService_GetMetrics_FullMethodName      = "/consumer.ConsumerService/GetMetrics"
+	ConsumerService_Control_FullMethodName         = "/consumer.ConsumerService/Control"
 )
 
 // ConsumerServiceClient is the client API for ConsumerService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// ConsumerService defines the RPC interface for a consumer.
+// ConsumerService defines the enhanced RPC interface for a consumer.
 type ConsumerServiceClient interface {
-	// Retrieve consumer capabilities.
+	// Basic operations
 	GetCapabilities(ctx context.Context, in *CapabilitiesRequest, opts ...grpc.CallOption) (*CapabilitiesResponse, error)
-	// Configure the consumer with provided settings.
 	Configure(ctx context.Context, in *ConfigureRequest, opts ...grpc.CallOption) (*ConfigureResponse, error)
-	// Consume a data message.
+	// Single message consumption
 	Consume(ctx context.Context, in *ConsumeRequest, opts ...grpc.CallOption) (*ConsumeResponse, error)
-	// Retrieve metrics from the consumer.
+	// Batch message consumption
+	BatchConsume(ctx context.Context, in *BatchConsumeRequest, opts ...grpc.CallOption) (*BatchConsumeResponse, error)
+	// Streaming message consumption
+	StreamConsume(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ConsumeRequest, ConsumeResponse], error)
+	// Health and metrics
+	CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 	GetMetrics(ctx context.Context, in *MetricsRequest, opts ...grpc.CallOption) (*MetricsResponse, error)
+	// Lifecycle management
+	Control(ctx context.Context, in *LifecycleRequest, opts ...grpc.CallOption) (*LifecycleResponse, error)
 }
 
 type consumerServiceClient struct {
@@ -79,6 +89,39 @@ func (c *consumerServiceClient) Consume(ctx context.Context, in *ConsumeRequest,
 	return out, nil
 }
 
+func (c *consumerServiceClient) BatchConsume(ctx context.Context, in *BatchConsumeRequest, opts ...grpc.CallOption) (*BatchConsumeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchConsumeResponse)
+	err := c.cc.Invoke(ctx, ConsumerService_BatchConsume_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *consumerServiceClient) StreamConsume(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ConsumeRequest, ConsumeResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ConsumerService_ServiceDesc.Streams[0], ConsumerService_StreamConsume_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[ConsumeRequest, ConsumeResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ConsumerService_StreamConsumeClient = grpc.BidiStreamingClient[ConsumeRequest, ConsumeResponse]
+
+func (c *consumerServiceClient) CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, ConsumerService_CheckHealth_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *consumerServiceClient) GetMetrics(ctx context.Context, in *MetricsRequest, opts ...grpc.CallOption) (*MetricsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MetricsResponse)
@@ -89,20 +132,36 @@ func (c *consumerServiceClient) GetMetrics(ctx context.Context, in *MetricsReque
 	return out, nil
 }
 
+func (c *consumerServiceClient) Control(ctx context.Context, in *LifecycleRequest, opts ...grpc.CallOption) (*LifecycleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LifecycleResponse)
+	err := c.cc.Invoke(ctx, ConsumerService_Control_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ConsumerServiceServer is the server API for ConsumerService service.
 // All implementations must embed UnimplementedConsumerServiceServer
 // for forward compatibility.
 //
-// ConsumerService defines the RPC interface for a consumer.
+// ConsumerService defines the enhanced RPC interface for a consumer.
 type ConsumerServiceServer interface {
-	// Retrieve consumer capabilities.
+	// Basic operations
 	GetCapabilities(context.Context, *CapabilitiesRequest) (*CapabilitiesResponse, error)
-	// Configure the consumer with provided settings.
 	Configure(context.Context, *ConfigureRequest) (*ConfigureResponse, error)
-	// Consume a data message.
+	// Single message consumption
 	Consume(context.Context, *ConsumeRequest) (*ConsumeResponse, error)
-	// Retrieve metrics from the consumer.
+	// Batch message consumption
+	BatchConsume(context.Context, *BatchConsumeRequest) (*BatchConsumeResponse, error)
+	// Streaming message consumption
+	StreamConsume(grpc.BidiStreamingServer[ConsumeRequest, ConsumeResponse]) error
+	// Health and metrics
+	CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
 	GetMetrics(context.Context, *MetricsRequest) (*MetricsResponse, error)
+	// Lifecycle management
+	Control(context.Context, *LifecycleRequest) (*LifecycleResponse, error)
 	mustEmbedUnimplementedConsumerServiceServer()
 }
 
@@ -122,8 +181,20 @@ func (UnimplementedConsumerServiceServer) Configure(context.Context, *ConfigureR
 func (UnimplementedConsumerServiceServer) Consume(context.Context, *ConsumeRequest) (*ConsumeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Consume not implemented")
 }
+func (UnimplementedConsumerServiceServer) BatchConsume(context.Context, *BatchConsumeRequest) (*BatchConsumeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchConsume not implemented")
+}
+func (UnimplementedConsumerServiceServer) StreamConsume(grpc.BidiStreamingServer[ConsumeRequest, ConsumeResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method StreamConsume not implemented")
+}
+func (UnimplementedConsumerServiceServer) CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckHealth not implemented")
+}
 func (UnimplementedConsumerServiceServer) GetMetrics(context.Context, *MetricsRequest) (*MetricsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetrics not implemented")
+}
+func (UnimplementedConsumerServiceServer) Control(context.Context, *LifecycleRequest) (*LifecycleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Control not implemented")
 }
 func (UnimplementedConsumerServiceServer) mustEmbedUnimplementedConsumerServiceServer() {}
 func (UnimplementedConsumerServiceServer) testEmbeddedByValue()                         {}
@@ -200,6 +271,49 @@ func _ConsumerService_Consume_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ConsumerService_BatchConsume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchConsumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerServiceServer).BatchConsume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConsumerService_BatchConsume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerServiceServer).BatchConsume(ctx, req.(*BatchConsumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConsumerService_StreamConsume_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ConsumerServiceServer).StreamConsume(&grpc.GenericServerStream[ConsumeRequest, ConsumeResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ConsumerService_StreamConsumeServer = grpc.BidiStreamingServer[ConsumeRequest, ConsumeResponse]
+
+func _ConsumerService_CheckHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerServiceServer).CheckHealth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConsumerService_CheckHealth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerServiceServer).CheckHealth(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ConsumerService_GetMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MetricsRequest)
 	if err := dec(in); err != nil {
@@ -214,6 +328,24 @@ func _ConsumerService_GetMetrics_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConsumerServiceServer).GetMetrics(ctx, req.(*MetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConsumerService_Control_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LifecycleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerServiceServer).Control(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConsumerService_Control_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerServiceServer).Control(ctx, req.(*LifecycleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -238,10 +370,29 @@ var ConsumerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ConsumerService_Consume_Handler,
 		},
 		{
+			MethodName: "BatchConsume",
+			Handler:    _ConsumerService_BatchConsume_Handler,
+		},
+		{
+			MethodName: "CheckHealth",
+			Handler:    _ConsumerService_CheckHealth_Handler,
+		},
+		{
 			MethodName: "GetMetrics",
 			Handler:    _ConsumerService_GetMetrics_Handler,
 		},
+		{
+			MethodName: "Control",
+			Handler:    _ConsumerService_Control_Handler,
+		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamConsume",
+			Handler:       _ConsumerService_StreamConsume_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/consumer/consumer.proto",
 }

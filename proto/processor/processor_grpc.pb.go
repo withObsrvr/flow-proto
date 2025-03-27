@@ -19,24 +19,34 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProcessorService_GetCapabilities_FullMethodName = "/processor.ProcessorService/GetCapabilities"
-	ProcessorService_Configure_FullMethodName       = "/processor.ProcessorService/Configure"
-	ProcessorService_Process_FullMethodName         = "/processor.ProcessorService/Process"
+	ProcessorService_GetCapabilities_FullMethodName    = "/processor.ProcessorService/GetCapabilities"
+	ProcessorService_Configure_FullMethodName          = "/processor.ProcessorService/Configure"
+	ProcessorService_Process_FullMethodName            = "/processor.ProcessorService/Process"
+	ProcessorService_ProcessWithControl_FullMethodName = "/processor.ProcessorService/ProcessWithControl"
+	ProcessorService_GetState_FullMethodName           = "/processor.ProcessorService/GetState"
+	ProcessorService_CheckHealth_FullMethodName        = "/processor.ProcessorService/CheckHealth"
+	ProcessorService_ProcessSingle_FullMethodName      = "/processor.ProcessorService/ProcessSingle"
 )
 
 // ProcessorServiceClient is the client API for ProcessorService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// ProcessorService defines the RPC interface for a processor.
+// ProcessorService defines the enhanced RPC interface for a processor.
 type ProcessorServiceClient interface {
-	// Retrieves the processor's capabilities.
+	// Basic operations
 	GetCapabilities(ctx context.Context, in *CapabilitiesRequest, opts ...grpc.CallOption) (*CapabilitiesResponse, error)
-	// Configures the processor with provided settings.
 	Configure(ctx context.Context, in *ConfigureRequest, opts ...grpc.CallOption) (*ConfigureResponse, error)
-	// Processes incoming data messages and streams back the processed data.
-	// This is a bidirectional streaming RPC.
+	// Standard bidirectional streaming process
 	Process(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[DataMessage, DataMessage], error)
+	// Enhanced bidirectional streaming with control messages
+	ProcessWithControl(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ProcessControlMessage, ProcessControlMessage], error)
+	// State management
+	GetState(ctx context.Context, in *GetStateRequest, opts ...grpc.CallOption) (*GetStateResponse, error)
+	// Health check
+	CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
+	// Single message processing (for simple cases)
+	ProcessSingle(ctx context.Context, in *DataMessage, opts ...grpc.CallOption) (*DataMessage, error)
 }
 
 type processorServiceClient struct {
@@ -80,19 +90,68 @@ func (c *processorServiceClient) Process(ctx context.Context, opts ...grpc.CallO
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ProcessorService_ProcessClient = grpc.BidiStreamingClient[DataMessage, DataMessage]
 
+func (c *processorServiceClient) ProcessWithControl(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ProcessControlMessage, ProcessControlMessage], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ProcessorService_ServiceDesc.Streams[1], ProcessorService_ProcessWithControl_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[ProcessControlMessage, ProcessControlMessage]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ProcessorService_ProcessWithControlClient = grpc.BidiStreamingClient[ProcessControlMessage, ProcessControlMessage]
+
+func (c *processorServiceClient) GetState(ctx context.Context, in *GetStateRequest, opts ...grpc.CallOption) (*GetStateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetStateResponse)
+	err := c.cc.Invoke(ctx, ProcessorService_GetState_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *processorServiceClient) CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HealthCheckResponse)
+	err := c.cc.Invoke(ctx, ProcessorService_CheckHealth_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *processorServiceClient) ProcessSingle(ctx context.Context, in *DataMessage, opts ...grpc.CallOption) (*DataMessage, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DataMessage)
+	err := c.cc.Invoke(ctx, ProcessorService_ProcessSingle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProcessorServiceServer is the server API for ProcessorService service.
 // All implementations must embed UnimplementedProcessorServiceServer
 // for forward compatibility.
 //
-// ProcessorService defines the RPC interface for a processor.
+// ProcessorService defines the enhanced RPC interface for a processor.
 type ProcessorServiceServer interface {
-	// Retrieves the processor's capabilities.
+	// Basic operations
 	GetCapabilities(context.Context, *CapabilitiesRequest) (*CapabilitiesResponse, error)
-	// Configures the processor with provided settings.
 	Configure(context.Context, *ConfigureRequest) (*ConfigureResponse, error)
-	// Processes incoming data messages and streams back the processed data.
-	// This is a bidirectional streaming RPC.
+	// Standard bidirectional streaming process
 	Process(grpc.BidiStreamingServer[DataMessage, DataMessage]) error
+	// Enhanced bidirectional streaming with control messages
+	ProcessWithControl(grpc.BidiStreamingServer[ProcessControlMessage, ProcessControlMessage]) error
+	// State management
+	GetState(context.Context, *GetStateRequest) (*GetStateResponse, error)
+	// Health check
+	CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
+	// Single message processing (for simple cases)
+	ProcessSingle(context.Context, *DataMessage) (*DataMessage, error)
 	mustEmbedUnimplementedProcessorServiceServer()
 }
 
@@ -111,6 +170,18 @@ func (UnimplementedProcessorServiceServer) Configure(context.Context, *Configure
 }
 func (UnimplementedProcessorServiceServer) Process(grpc.BidiStreamingServer[DataMessage, DataMessage]) error {
 	return status.Errorf(codes.Unimplemented, "method Process not implemented")
+}
+func (UnimplementedProcessorServiceServer) ProcessWithControl(grpc.BidiStreamingServer[ProcessControlMessage, ProcessControlMessage]) error {
+	return status.Errorf(codes.Unimplemented, "method ProcessWithControl not implemented")
+}
+func (UnimplementedProcessorServiceServer) GetState(context.Context, *GetStateRequest) (*GetStateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetState not implemented")
+}
+func (UnimplementedProcessorServiceServer) CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckHealth not implemented")
+}
+func (UnimplementedProcessorServiceServer) ProcessSingle(context.Context, *DataMessage) (*DataMessage, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProcessSingle not implemented")
 }
 func (UnimplementedProcessorServiceServer) mustEmbedUnimplementedProcessorServiceServer() {}
 func (UnimplementedProcessorServiceServer) testEmbeddedByValue()                          {}
@@ -176,6 +247,67 @@ func _ProcessorService_Process_Handler(srv interface{}, stream grpc.ServerStream
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type ProcessorService_ProcessServer = grpc.BidiStreamingServer[DataMessage, DataMessage]
 
+func _ProcessorService_ProcessWithControl_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ProcessorServiceServer).ProcessWithControl(&grpc.GenericServerStream[ProcessControlMessage, ProcessControlMessage]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ProcessorService_ProcessWithControlServer = grpc.BidiStreamingServer[ProcessControlMessage, ProcessControlMessage]
+
+func _ProcessorService_GetState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProcessorServiceServer).GetState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProcessorService_GetState_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProcessorServiceServer).GetState(ctx, req.(*GetStateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProcessorService_CheckHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthCheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProcessorServiceServer).CheckHealth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProcessorService_CheckHealth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProcessorServiceServer).CheckHealth(ctx, req.(*HealthCheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProcessorService_ProcessSingle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DataMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProcessorServiceServer).ProcessSingle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProcessorService_ProcessSingle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProcessorServiceServer).ProcessSingle(ctx, req.(*DataMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProcessorService_ServiceDesc is the grpc.ServiceDesc for ProcessorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -191,11 +323,29 @@ var ProcessorService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Configure",
 			Handler:    _ProcessorService_Configure_Handler,
 		},
+		{
+			MethodName: "GetState",
+			Handler:    _ProcessorService_GetState_Handler,
+		},
+		{
+			MethodName: "CheckHealth",
+			Handler:    _ProcessorService_CheckHealth_Handler,
+		},
+		{
+			MethodName: "ProcessSingle",
+			Handler:    _ProcessorService_ProcessSingle_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Process",
 			Handler:       _ProcessorService_Process_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "ProcessWithControl",
+			Handler:       _ProcessorService_ProcessWithControl_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
