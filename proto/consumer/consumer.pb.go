@@ -300,7 +300,9 @@ type DataMessage struct {
 	// Content type of the payload (e.g., "application/json", "stellar/xdr")
 	ContentType string `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
 	// Unique message identifier
-	MessageId     string `protobuf:"bytes,5,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+	MessageId string `protobuf:"bytes,5,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+	// Source information about the message origin
+	SourceInfo    *_struct.Struct `protobuf:"bytes,6,opt,name=source_info,json=sourceInfo,proto3" json:"source_info,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -368,6 +370,13 @@ func (x *DataMessage) GetMessageId() string {
 		return x.MessageId
 	}
 	return ""
+}
+
+func (x *DataMessage) GetSourceInfo() *_struct.Struct {
+	if x != nil {
+		return x.SourceInfo
+	}
+	return nil
 }
 
 // ConsumeRequest wraps a DataMessage to be consumed.
@@ -1541,14 +1550,16 @@ var File_proto_consumer_consumer_proto protoreflect.FileDescriptor
 
 const file_proto_consumer_consumer_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/consumer/consumer.proto\x12\bconsumer\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xd8\x01\n" +
+	"\x1dproto/consumer/consumer.proto\x12\bconsumer\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x92\x02\n" +
 	"\vDataMessage\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\x123\n" +
 	"\bmetadata\x18\x02 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x128\n" +
 	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12!\n" +
 	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\x12\x1d\n" +
 	"\n" +
-	"message_id\x18\x05 \x01(\tR\tmessageId\"`\n" +
+	"message_id\x18\x05 \x01(\tR\tmessageId\x128\n" +
+	"\vsource_info\x18\x06 \x01(\v2\x17.google.protobuf.StructR\n" +
+	"sourceInfo\"`\n" +
 	"\x0eConsumeRequest\x12/\n" +
 	"\amessage\x18\x01 \x01(\v2\x15.consumer.DataMessageR\amessage\x12\x1d\n" +
 	"\n" +
@@ -1725,50 +1736,51 @@ var file_proto_consumer_consumer_proto_goTypes = []any{
 var file_proto_consumer_consumer_proto_depIdxs = []int32{
 	26, // 0: consumer.DataMessage.metadata:type_name -> google.protobuf.Struct
 	27, // 1: consumer.DataMessage.timestamp:type_name -> google.protobuf.Timestamp
-	5,  // 2: consumer.ConsumeRequest.message:type_name -> consumer.DataMessage
-	8,  // 3: consumer.ConsumeResponse.error_info:type_name -> consumer.ErrorInfo
-	0,  // 4: consumer.ErrorInfo.severity:type_name -> consumer.ErrorInfo.Severity
-	26, // 5: consumer.ErrorInfo.context:type_name -> google.protobuf.Struct
-	5,  // 6: consumer.BatchConsumeRequest.messages:type_name -> consumer.DataMessage
-	11, // 7: consumer.BatchConsumeResponse.results:type_name -> consumer.MessageResult
-	8,  // 8: consumer.MessageResult.error_info:type_name -> consumer.ErrorInfo
-	25, // 9: consumer.CapabilitiesRequest.client_info:type_name -> consumer.CapabilitiesRequest.ClientInfoEntry
-	26, // 10: consumer.CapabilitiesResponse.capabilities:type_name -> google.protobuf.Struct
-	14, // 11: consumer.CapabilitiesResponse.schemas:type_name -> consumer.SchemaInfo
-	26, // 12: consumer.ConfigureRequest.config:type_name -> google.protobuf.Struct
-	1,  // 13: consumer.ConfigureRequest.validation_mode:type_name -> consumer.ConfigureRequest.ValidationMode
-	17, // 14: consumer.ConfigureResponse.validation_issues:type_name -> consumer.ValidationIssue
-	26, // 15: consumer.ConfigureResponse.current_config:type_name -> google.protobuf.Struct
-	2,  // 16: consumer.ValidationIssue.severity:type_name -> consumer.ValidationIssue.Severity
-	3,  // 17: consumer.HealthCheckResponse.status:type_name -> consumer.HealthCheckResponse.ServingStatus
-	20, // 18: consumer.HealthCheckResponse.components:type_name -> consumer.ComponentHealth
-	26, // 19: consumer.HealthCheckResponse.metrics:type_name -> google.protobuf.Struct
-	3,  // 20: consumer.ComponentHealth.status:type_name -> consumer.HealthCheckResponse.ServingStatus
-	26, // 21: consumer.MetricsResponse.metrics:type_name -> google.protobuf.Struct
-	27, // 22: consumer.MetricsResponse.updated_at:type_name -> google.protobuf.Timestamp
-	4,  // 23: consumer.LifecycleRequest.operation:type_name -> consumer.LifecycleRequest.Operation
-	26, // 24: consumer.LifecycleRequest.parameters:type_name -> google.protobuf.Struct
-	12, // 25: consumer.ConsumerService.GetCapabilities:input_type -> consumer.CapabilitiesRequest
-	15, // 26: consumer.ConsumerService.Configure:input_type -> consumer.ConfigureRequest
-	6,  // 27: consumer.ConsumerService.Consume:input_type -> consumer.ConsumeRequest
-	9,  // 28: consumer.ConsumerService.BatchConsume:input_type -> consumer.BatchConsumeRequest
-	6,  // 29: consumer.ConsumerService.StreamConsume:input_type -> consumer.ConsumeRequest
-	18, // 30: consumer.ConsumerService.CheckHealth:input_type -> consumer.HealthCheckRequest
-	21, // 31: consumer.ConsumerService.GetMetrics:input_type -> consumer.MetricsRequest
-	23, // 32: consumer.ConsumerService.Control:input_type -> consumer.LifecycleRequest
-	13, // 33: consumer.ConsumerService.GetCapabilities:output_type -> consumer.CapabilitiesResponse
-	16, // 34: consumer.ConsumerService.Configure:output_type -> consumer.ConfigureResponse
-	7,  // 35: consumer.ConsumerService.Consume:output_type -> consumer.ConsumeResponse
-	10, // 36: consumer.ConsumerService.BatchConsume:output_type -> consumer.BatchConsumeResponse
-	7,  // 37: consumer.ConsumerService.StreamConsume:output_type -> consumer.ConsumeResponse
-	19, // 38: consumer.ConsumerService.CheckHealth:output_type -> consumer.HealthCheckResponse
-	22, // 39: consumer.ConsumerService.GetMetrics:output_type -> consumer.MetricsResponse
-	24, // 40: consumer.ConsumerService.Control:output_type -> consumer.LifecycleResponse
-	33, // [33:41] is the sub-list for method output_type
-	25, // [25:33] is the sub-list for method input_type
-	25, // [25:25] is the sub-list for extension type_name
-	25, // [25:25] is the sub-list for extension extendee
-	0,  // [0:25] is the sub-list for field type_name
+	26, // 2: consumer.DataMessage.source_info:type_name -> google.protobuf.Struct
+	5,  // 3: consumer.ConsumeRequest.message:type_name -> consumer.DataMessage
+	8,  // 4: consumer.ConsumeResponse.error_info:type_name -> consumer.ErrorInfo
+	0,  // 5: consumer.ErrorInfo.severity:type_name -> consumer.ErrorInfo.Severity
+	26, // 6: consumer.ErrorInfo.context:type_name -> google.protobuf.Struct
+	5,  // 7: consumer.BatchConsumeRequest.messages:type_name -> consumer.DataMessage
+	11, // 8: consumer.BatchConsumeResponse.results:type_name -> consumer.MessageResult
+	8,  // 9: consumer.MessageResult.error_info:type_name -> consumer.ErrorInfo
+	25, // 10: consumer.CapabilitiesRequest.client_info:type_name -> consumer.CapabilitiesRequest.ClientInfoEntry
+	26, // 11: consumer.CapabilitiesResponse.capabilities:type_name -> google.protobuf.Struct
+	14, // 12: consumer.CapabilitiesResponse.schemas:type_name -> consumer.SchemaInfo
+	26, // 13: consumer.ConfigureRequest.config:type_name -> google.protobuf.Struct
+	1,  // 14: consumer.ConfigureRequest.validation_mode:type_name -> consumer.ConfigureRequest.ValidationMode
+	17, // 15: consumer.ConfigureResponse.validation_issues:type_name -> consumer.ValidationIssue
+	26, // 16: consumer.ConfigureResponse.current_config:type_name -> google.protobuf.Struct
+	2,  // 17: consumer.ValidationIssue.severity:type_name -> consumer.ValidationIssue.Severity
+	3,  // 18: consumer.HealthCheckResponse.status:type_name -> consumer.HealthCheckResponse.ServingStatus
+	20, // 19: consumer.HealthCheckResponse.components:type_name -> consumer.ComponentHealth
+	26, // 20: consumer.HealthCheckResponse.metrics:type_name -> google.protobuf.Struct
+	3,  // 21: consumer.ComponentHealth.status:type_name -> consumer.HealthCheckResponse.ServingStatus
+	26, // 22: consumer.MetricsResponse.metrics:type_name -> google.protobuf.Struct
+	27, // 23: consumer.MetricsResponse.updated_at:type_name -> google.protobuf.Timestamp
+	4,  // 24: consumer.LifecycleRequest.operation:type_name -> consumer.LifecycleRequest.Operation
+	26, // 25: consumer.LifecycleRequest.parameters:type_name -> google.protobuf.Struct
+	12, // 26: consumer.ConsumerService.GetCapabilities:input_type -> consumer.CapabilitiesRequest
+	15, // 27: consumer.ConsumerService.Configure:input_type -> consumer.ConfigureRequest
+	6,  // 28: consumer.ConsumerService.Consume:input_type -> consumer.ConsumeRequest
+	9,  // 29: consumer.ConsumerService.BatchConsume:input_type -> consumer.BatchConsumeRequest
+	6,  // 30: consumer.ConsumerService.StreamConsume:input_type -> consumer.ConsumeRequest
+	18, // 31: consumer.ConsumerService.CheckHealth:input_type -> consumer.HealthCheckRequest
+	21, // 32: consumer.ConsumerService.GetMetrics:input_type -> consumer.MetricsRequest
+	23, // 33: consumer.ConsumerService.Control:input_type -> consumer.LifecycleRequest
+	13, // 34: consumer.ConsumerService.GetCapabilities:output_type -> consumer.CapabilitiesResponse
+	16, // 35: consumer.ConsumerService.Configure:output_type -> consumer.ConfigureResponse
+	7,  // 36: consumer.ConsumerService.Consume:output_type -> consumer.ConsumeResponse
+	10, // 37: consumer.ConsumerService.BatchConsume:output_type -> consumer.BatchConsumeResponse
+	7,  // 38: consumer.ConsumerService.StreamConsume:output_type -> consumer.ConsumeResponse
+	19, // 39: consumer.ConsumerService.CheckHealth:output_type -> consumer.HealthCheckResponse
+	22, // 40: consumer.ConsumerService.GetMetrics:output_type -> consumer.MetricsResponse
+	24, // 41: consumer.ConsumerService.Control:output_type -> consumer.LifecycleResponse
+	34, // [34:42] is the sub-list for method output_type
+	26, // [26:34] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_proto_consumer_consumer_proto_init() }

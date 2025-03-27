@@ -23,6 +23,9 @@ message DataMessage {
   
   // Unique message identifier
   string message_id = 5;
+  
+  // Source information about the message origin
+  google.protobuf.Struct source_info = 6;
 }
 
 // ConsumeRequest wraps a DataMessage to be consumed.

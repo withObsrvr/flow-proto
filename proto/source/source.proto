@@ -22,13 +22,13 @@ message DataMessage {
   
   // Type of payload to help consumers interpret the data correctly.
   // Examples: "xdr", "json", "avro", "protobuf", "raw"
-  string payload_type = 4;
+  string content_type = 4;
   
   // Unique identifier for the message.
   string message_id = 5;
   
-  // Identifier for the source producing this message.
-  string source_id = 6;
+  // Source information as a structured object
+  google.protobuf.Struct source_info = 6;
   
   // Sequence information to help with ordering and deduplication.
   int64 sequence_number = 7;

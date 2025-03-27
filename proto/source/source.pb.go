@@ -245,11 +245,11 @@ type DataMessage struct {
 	Timestamp *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// Type of payload to help consumers interpret the data correctly.
 	// Examples: "xdr", "json", "avro", "protobuf", "raw"
-	PayloadType string `protobuf:"bytes,4,opt,name=payload_type,json=payloadType,proto3" json:"payload_type,omitempty"`
+	ContentType string `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
 	// Unique identifier for the message.
 	MessageId string `protobuf:"bytes,5,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
-	// Identifier for the source producing this message.
-	SourceId string `protobuf:"bytes,6,opt,name=source_id,json=sourceId,proto3" json:"source_id,omitempty"`
+	// Source information as a structured object
+	SourceInfo *_struct.Struct `protobuf:"bytes,6,opt,name=source_info,json=sourceInfo,proto3" json:"source_info,omitempty"`
 	// Sequence information to help with ordering and deduplication.
 	SequenceNumber int64 `protobuf:"varint,7,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
 	unknownFields  protoimpl.UnknownFields
@@ -307,9 +307,9 @@ func (x *DataMessage) GetTimestamp() *timestamp.Timestamp {
 	return nil
 }
 
-func (x *DataMessage) GetPayloadType() string {
+func (x *DataMessage) GetContentType() string {
 	if x != nil {
-		return x.PayloadType
+		return x.ContentType
 	}
 	return ""
 }
@@ -321,11 +321,11 @@ func (x *DataMessage) GetMessageId() string {
 	return ""
 }
 
-func (x *DataMessage) GetSourceId() string {
+func (x *DataMessage) GetSourceInfo() *_struct.Struct {
 	if x != nil {
-		return x.SourceId
+		return x.SourceInfo
 	}
-	return ""
+	return nil
 }
 
 func (x *DataMessage) GetSequenceNumber() int64 {
@@ -1507,15 +1507,16 @@ var File_proto_source_source_proto protoreflect.FileDescriptor
 
 const file_proto_source_source_proto_rawDesc = "" +
 	"\n" +
-	"\x19proto/source/source.proto\x12\x06source\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x9e\x02\n" +
+	"\x19proto/source/source.proto\x12\x06source\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xbb\x02\n" +
 	"\vDataMessage\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\x123\n" +
 	"\bmetadata\x18\x02 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x128\n" +
 	"\ttimestamp\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12!\n" +
-	"\fpayload_type\x18\x04 \x01(\tR\vpayloadType\x12\x1d\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\x12\x1d\n" +
 	"\n" +
-	"message_id\x18\x05 \x01(\tR\tmessageId\x12\x1b\n" +
-	"\tsource_id\x18\x06 \x01(\tR\bsourceId\x12'\n" +
+	"message_id\x18\x05 \x01(\tR\tmessageId\x128\n" +
+	"\vsource_info\x18\x06 \x01(\v2\x17.google.protobuf.StructR\n" +
+	"sourceInfo\x12'\n" +
 	"\x0fsequence_number\x18\a \x01(\x03R\x0esequenceNumber\"\x15\n" +
 	"\x13CapabilitiesRequest\"\xc4\x02\n" +
 	"\x14CapabilitiesResponse\x12!\n" +
@@ -1678,51 +1679,52 @@ var file_proto_source_source_proto_goTypes = []any{
 var file_proto_source_source_proto_depIdxs = []int32{
 	25, // 0: source.DataMessage.metadata:type_name -> google.protobuf.Struct
 	26, // 1: source.DataMessage.timestamp:type_name -> google.protobuf.Timestamp
-	25, // 2: source.CapabilitiesResponse.capabilities:type_name -> google.protobuf.Struct
-	25, // 3: source.CapabilitiesResponse.config_schema:type_name -> google.protobuf.Struct
-	25, // 4: source.ConfigureRequest.config:type_name -> google.protobuf.Struct
-	0,  // 5: source.ConfigureRequest.validation_mode:type_name -> source.ConfigureRequest.ValidationMode
-	9,  // 6: source.ConfigureResponse.validation_issues:type_name -> source.ValidationIssue
-	25, // 7: source.ConfigureResponse.current_config:type_name -> google.protobuf.Struct
-	1,  // 8: source.ValidationIssue.severity:type_name -> source.ValidationIssue.Severity
-	25, // 9: source.StartRequest.parameters:type_name -> google.protobuf.Struct
-	11, // 10: source.StartRequest.pagination:type_name -> source.PaginationOptions
-	25, // 11: source.StartRequest.filters:type_name -> google.protobuf.Struct
-	25, // 12: source.StartResponse.initial_state:type_name -> google.protobuf.Struct
-	25, // 13: source.StopResponse.final_state:type_name -> google.protobuf.Struct
-	25, // 14: source.GetStateResponse.state:type_name -> google.protobuf.Struct
-	26, // 15: source.GetStateResponse.last_updated:type_name -> google.protobuf.Timestamp
-	25, // 16: source.SetStateRequest.state:type_name -> google.protobuf.Struct
-	2,  // 17: source.HealthCheckResponse.status:type_name -> source.HealthCheckResponse.ServingStatus
-	21, // 18: source.HealthCheckResponse.components:type_name -> source.ComponentHealth
-	25, // 19: source.HealthCheckResponse.metrics:type_name -> google.protobuf.Struct
-	2,  // 20: source.ComponentHealth.status:type_name -> source.HealthCheckResponse.ServingStatus
-	4,  // 21: source.SnapshotResponse.snapshots:type_name -> source.DataMessage
-	3,  // 22: source.StreamCommand.command_type:type_name -> source.StreamCommand.CommandType
-	25, // 23: source.StreamCommand.parameters:type_name -> google.protobuf.Struct
-	5,  // 24: source.SourceService.GetCapabilities:input_type -> source.CapabilitiesRequest
-	7,  // 25: source.SourceService.Configure:input_type -> source.ConfigureRequest
-	10, // 26: source.SourceService.StartStreaming:input_type -> source.StartRequest
-	13, // 27: source.SourceService.StopStreaming:input_type -> source.StopRequest
-	15, // 28: source.SourceService.GetState:input_type -> source.GetStateRequest
-	17, // 29: source.SourceService.SetState:input_type -> source.SetStateRequest
-	19, // 30: source.SourceService.CheckHealth:input_type -> source.HealthCheckRequest
-	22, // 31: source.SourceService.GetSnapshot:input_type -> source.SnapshotRequest
-	24, // 32: source.SourceService.InteractiveStreaming:input_type -> source.StreamCommand
-	6,  // 33: source.SourceService.GetCapabilities:output_type -> source.CapabilitiesResponse
-	8,  // 34: source.SourceService.Configure:output_type -> source.ConfigureResponse
-	4,  // 35: source.SourceService.StartStreaming:output_type -> source.DataMessage
-	14, // 36: source.SourceService.StopStreaming:output_type -> source.StopResponse
-	16, // 37: source.SourceService.GetState:output_type -> source.GetStateResponse
-	18, // 38: source.SourceService.SetState:output_type -> source.SetStateResponse
-	20, // 39: source.SourceService.CheckHealth:output_type -> source.HealthCheckResponse
-	23, // 40: source.SourceService.GetSnapshot:output_type -> source.SnapshotResponse
-	4,  // 41: source.SourceService.InteractiveStreaming:output_type -> source.DataMessage
-	33, // [33:42] is the sub-list for method output_type
-	24, // [24:33] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	25, // 2: source.DataMessage.source_info:type_name -> google.protobuf.Struct
+	25, // 3: source.CapabilitiesResponse.capabilities:type_name -> google.protobuf.Struct
+	25, // 4: source.CapabilitiesResponse.config_schema:type_name -> google.protobuf.Struct
+	25, // 5: source.ConfigureRequest.config:type_name -> google.protobuf.Struct
+	0,  // 6: source.ConfigureRequest.validation_mode:type_name -> source.ConfigureRequest.ValidationMode
+	9,  // 7: source.ConfigureResponse.validation_issues:type_name -> source.ValidationIssue
+	25, // 8: source.ConfigureResponse.current_config:type_name -> google.protobuf.Struct
+	1,  // 9: source.ValidationIssue.severity:type_name -> source.ValidationIssue.Severity
+	25, // 10: source.StartRequest.parameters:type_name -> google.protobuf.Struct
+	11, // 11: source.StartRequest.pagination:type_name -> source.PaginationOptions
+	25, // 12: source.StartRequest.filters:type_name -> google.protobuf.Struct
+	25, // 13: source.StartResponse.initial_state:type_name -> google.protobuf.Struct
+	25, // 14: source.StopResponse.final_state:type_name -> google.protobuf.Struct
+	25, // 15: source.GetStateResponse.state:type_name -> google.protobuf.Struct
+	26, // 16: source.GetStateResponse.last_updated:type_name -> google.protobuf.Timestamp
+	25, // 17: source.SetStateRequest.state:type_name -> google.protobuf.Struct
+	2,  // 18: source.HealthCheckResponse.status:type_name -> source.HealthCheckResponse.ServingStatus
+	21, // 19: source.HealthCheckResponse.components:type_name -> source.ComponentHealth
+	25, // 20: source.HealthCheckResponse.metrics:type_name -> google.protobuf.Struct
+	2,  // 21: source.ComponentHealth.status:type_name -> source.HealthCheckResponse.ServingStatus
+	4,  // 22: source.SnapshotResponse.snapshots:type_name -> source.DataMessage
+	3,  // 23: source.StreamCommand.command_type:type_name -> source.StreamCommand.CommandType
+	25, // 24: source.StreamCommand.parameters:type_name -> google.protobuf.Struct
+	5,  // 25: source.SourceService.GetCapabilities:input_type -> source.CapabilitiesRequest
+	7,  // 26: source.SourceService.Configure:input_type -> source.ConfigureRequest
+	10, // 27: source.SourceService.StartStreaming:input_type -> source.StartRequest
+	13, // 28: source.SourceService.StopStreaming:input_type -> source.StopRequest
+	15, // 29: source.SourceService.GetState:input_type -> source.GetStateRequest
+	17, // 30: source.SourceService.SetState:input_type -> source.SetStateRequest
+	19, // 31: source.SourceService.CheckHealth:input_type -> source.HealthCheckRequest
+	22, // 32: source.SourceService.GetSnapshot:input_type -> source.SnapshotRequest
+	24, // 33: source.SourceService.InteractiveStreaming:input_type -> source.StreamCommand
+	6,  // 34: source.SourceService.GetCapabilities:output_type -> source.CapabilitiesResponse
+	8,  // 35: source.SourceService.Configure:output_type -> source.ConfigureResponse
+	4,  // 36: source.SourceService.StartStreaming:output_type -> source.DataMessage
+	14, // 37: source.SourceService.StopStreaming:output_type -> source.StopResponse
+	16, // 38: source.SourceService.GetState:output_type -> source.GetStateResponse
+	18, // 39: source.SourceService.SetState:output_type -> source.SetStateResponse
+	20, // 40: source.SourceService.CheckHealth:output_type -> source.HealthCheckResponse
+	23, // 41: source.SourceService.GetSnapshot:output_type -> source.SnapshotResponse
+	4,  // 42: source.SourceService.InteractiveStreaming:output_type -> source.DataMessage
+	34, // [34:43] is the sub-list for method output_type
+	25, // [25:34] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_proto_source_source_proto_init() }
