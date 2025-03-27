@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package processor;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/withObsrvr/flow-proto/proto/processor";
+
+// DataMessage represents the basic message exchanged with the processor.
+message DataMessage {
+  // The raw data payload.
+  bytes payload = 1;
+  
+  // Key-value metadata associated with the message.
+  map<string, string> metadata = 2;
+  
+  // The time at which the message was created.
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+// CapabilitiesRequest is empty since no parameters are needed.
+message CapabilitiesRequest {}
+
+// CapabilitiesResponse reports the processor's capabilities.
+message CapabilitiesResponse {
+  string service_name = 1;
+  string service_version = 2;
+  repeated string supported_features = 3;
+  // Additional capabilities can be provided as key-value pairs.
+  map<string, string> capabilities = 4;
+}
+
+// ConfigureRequest carries configuration settings as key-value pairs.
+message ConfigureRequest {
+  map<string, string> config = 1;
+}
+
+// ConfigureResponse returns success status and an optional error message.
+message ConfigureResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+// ProcessorService defines the RPC interface for a processor.
+service ProcessorService {
+  // Retrieves the processor's capabilities.
+  rpc GetCapabilities(CapabilitiesRequest) returns (CapabilitiesResponse);
+  
+  // Configures the processor with provided settings.
+  rpc Configure(ConfigureRequest) returns (ConfigureResponse);
+  
+  // Processes incoming data messages and streams back the processed data.
+  // This is a bidirectional streaming RPC.
+  rpc Process(stream DataMessage) returns (stream DataMessage);
+} 

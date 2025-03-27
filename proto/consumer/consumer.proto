@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package consumer;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/withObsrvr/flow-proto/proto/consumer";
+
+// DataMessage represents the basic message that the consumer will receive.
+message DataMessage {
+  // The raw data payload.
+  bytes payload = 1;
+  
+  // Additional metadata as key-value pairs.
+  map<string, string> metadata = 2;
+  
+  // Timestamp when the message was created.
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+// ConsumeRequest wraps a DataMessage to be consumed.
+message ConsumeRequest {
+  DataMessage message = 1;
+}
+
+// ConsumeResponse acknowledges the consumption of a message.
+message ConsumeResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+// Requests and responses for capabilities.
+message CapabilitiesRequest {}
+
+message CapabilitiesResponse {
+  string service_name = 1;
+  string service_version = 2;
+  repeated string supported_features = 3;
+  // Additional capabilities can be included as key-value pairs.
+  map<string, string> capabilities = 4;
+}
+
+// Requests and responses for configuration.
+message ConfigureRequest {
+  // Configuration settings as key-value pairs.
+  map<string, string> config = 1;
+}
+
+message ConfigureResponse {
+  bool success = 1;
+  string error_message = 2;
+}
+
+// Request and response for retrieving consumer metrics.
+message MetricsRequest {}
+
+message MetricsResponse {
+  // Metrics reported as key-value pairs.
+  map<string, string> metrics = 1;
+}
+
+// ConsumerService defines the RPC interface for a consumer.
+service ConsumerService {
+  // Retrieve consumer capabilities.
+  rpc GetCapabilities(CapabilitiesRequest) returns (CapabilitiesResponse);
+  
+  // Configure the consumer with provided settings.
+  rpc Configure(ConfigureRequest) returns (ConfigureResponse);
+  
+  // Consume a data message.
+  rpc Consume(ConsumeRequest) returns (ConsumeResponse);
+  
+  // Retrieve metrics from the consumer.
+  rpc GetMetrics(MetricsRequest) returns (MetricsResponse);
+} 
