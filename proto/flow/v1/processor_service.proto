@@ -1,0 +1,10 @@
+syntax = "proto3";
+package flow.v1;
+
+import "flow/v1/envelope.proto";
+import "flow/v1/common.proto";
+
+service ProcessorService {
+  // Flow sends Envelopes downstream; processor sends back transformed ones.
+  rpc Transform(stream Envelope) returns (stream Envelope);
+}

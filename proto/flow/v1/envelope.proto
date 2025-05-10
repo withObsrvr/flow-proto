@@ -1,0 +1,32 @@
+syntax = "proto3";
+package flow.v1;
+
+import "flow/v1/common.proto";
+import "google/protobuf/timestamp.proto";
+import "ingest/processors/token_transfer/token_transfer_event.proto";  // Stellar’s existing IDL
+
+enum Kind {
+  KIND_UNSPECIFIED = 0;
+  LEDGER_META      = 1;   // raw LedgerCloseMeta XDR
+  NETWORK_EVENT    = 2;   // Soroban Event, payment op, etc. – raw XDR
+  TOKEN_TRANSFER   = 3;   // decoded, schema‑safe event
+  RESERVED4        = 4;   // leave holes for future native kinds
+}
+
+message Envelope {
+  /** What is inside. Helps routers decide fast. */
+  Kind kind = 1;
+
+  /** Where in the chain this item belongs. */
+  Cursor cursor = 2;
+
+  /** Nanosecond wall‑clock when the source observed it. */
+  google.protobuf.Timestamp observed_at = 3;
+
+  /** One‑of payload.  TokenTransferEvent is typed; others stay raw. */
+  oneof payload {
+    bytes                      ledger_meta_xdr = 10; // Kind = LEDGER_META
+    bytes                      event_xdr       = 11; // Kind = NETWORK_EVENT
+    token_transfer.TokenTransferEvent token_transfer = 12; // Kind = TOKEN_TRANSFER
+  }
+}
