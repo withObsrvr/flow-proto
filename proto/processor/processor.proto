@@ -5,7 +5,7 @@ package processor;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 
-option go_package = "github.com/withObsrvr/flow-proto/proto/processor";
+option go_package = "github.com/withObsrvr/flow-proto/gen/processor;processor";
 
 // DataMessage represents the basic message exchanged with the processor.
 message DataMessage {

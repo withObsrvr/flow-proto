@@ -8,9 +8,10 @@ package token_transfer;
 import "google/protobuf/timestamp.proto";
 
 // Import are relative to the top level directory -  `/protos`
-import "ingest/asset/asset.proto";
+import "ingest/asset/asset.proto"; // Asset message
 
-option go_package = "github.com/stellar/go/ingest/processors/token_transfer";
+
+option go_package = "github.com/withObsrvr/flow-proto/proto/ingest/processors/token_transfer;token_transfer";
 
 
 // EventMeta message

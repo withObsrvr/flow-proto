@@ -1,5 +1,4 @@
-# Generated protocol buffer files
-*.pb.go
+
 
 # Go binary, testing, and specific IDE folders/files
 /bin/
