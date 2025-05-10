@@ -4,7 +4,7 @@ option go_package = "github.com/withObsrvr/flow-proto/proto/flow/v1;flowv1";
 
 import "flow/v1/common.proto";
 import "google/protobuf/timestamp.proto";
-import "ingest/processors/token_transfer/token_transfer_event.proto";  // Stellar’s existing IDL
+import "ingest/processors/token_transfer/token_transfer_event.proto"; // Copied from stellar/go/protos/ingest/token_transfer_event.proto
 
 enum Kind {
   KIND_UNSPECIFIED = 0;

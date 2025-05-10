@@ -7,7 +7,7 @@
 package flowv1
 
 import (
-	token_transfer "github.com/stellar/go/ingest/processors/token_transfer"
+	token_transfer "github.com/withObsrvr/flow-proto/proto/ingest/processors/token_transfer"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
