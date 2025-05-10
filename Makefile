@@ -11,6 +11,7 @@ PROTO_FILES := $(shell find $(PROTO_DIR) -name '*.proto')
 proto: $(PROTO_FILES)
 	@echo "→ Generating Go stubs…"
 	@protoc \
+	  -I=$(PROTO_DIR) \
 	  -I=. \
 	  --go_out=$(OUT_DIR) \
 	  --go_opt=paths=source_relative \
