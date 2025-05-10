@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/withObsrvr/flow-proto/proto/consumer"
-	"github.com/withObsrvr/flow-proto/proto/processor"
-	"github.com/withObsrvr/flow-proto/proto/source"
+	"github.com/withObsrvr/flow-proto/go/gen/consumer"
+	"github.com/withObsrvr/flow-proto/go/gen/processor"
+	"github.com/withObsrvr/flow-proto/go/gen/source"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

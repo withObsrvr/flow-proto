@@ -5,7 +5,7 @@ package source;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 
-option go_package = "github.com/withObsrvr/flow-proto/proto/source";
+option go_package = "github.com/withObsrvr/flow-proto/gen/source;source";
 
 // DataMessage is the basic message exchanged from a Source.
 // Enhanced to support multiple payload types and richer metadata.

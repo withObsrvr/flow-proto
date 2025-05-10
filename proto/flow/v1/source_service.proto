@@ -1,0 +1,24 @@
+syntax = "proto3";
+package flow.v1;
+option go_package = "github.com/withObsrvr/flow-proto/proto/flow/v1;flowv1";
+
+import "flow/v1/common.proto";
+import "flow/v1/envelope.proto";
+
+/** Parameters Flow passes when it asks a Source to start streaming. */
+message StreamRequest {
+  uint64                       start_ledger = 1;
+  uint64                       stop_ledger  = 2;  // 0 = open‑ended
+  repeated bytes               filters      = 3;  // CEL or opaque JSON – source‑specific
+  ResumeToken                  resume_from  = 4;  // optional
+}
+
+/** ACK every N envelopes so Source can drop state safely. */
+message Ack {
+  ResumeToken up_to = 1;
+}
+
+service SourceService {
+  // Bi‑di keeps it simple: Flow sends ACKs, Source streams Envelopes.
+  rpc Stream(stream Ack) returns (stream Envelope);
+}

@@ -5,7 +5,7 @@ package consumer;
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 
-option go_package = "github.com/withObsrvr/flow-proto/proto/consumer";
+option go_package = "github.com/withObsrvr/flow-proto/gen/consumer;consumer";
 
 // DataMessage represents the basic message that the consumer will receive.
 message DataMessage {

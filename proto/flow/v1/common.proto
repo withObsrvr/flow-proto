@@ -1,0 +1,19 @@
+syntax = "proto3";
+package flow.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/proto/flow/v1;flowv1";
+
+import "google/protobuf/timestamp.proto";
+
+/** Stable position in the ledger stream. */
+message Cursor {
+  uint64 ledger_seq = 1;
+  uint32 index      = 2;          // index inside ledger (0 for meta)
+}
+
+/** Used by sources & processors to resume after crash / reconnect. */
+message ResumeToken {
+  Cursor cursor          = 1;
+  bytes  opaque          = 2;     // vendor‑specific checkpoint
+  google.protobuf.Timestamp generated_at = 3;
+}
