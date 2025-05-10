@@ -1,5 +1,6 @@
-PROTO_DIR := proto
-OUT_DIR   := $(PROTO_DIR)   # you’re generating next to the .proto source
+PROTO_DIR := ./proto
+GO_SRC_DICR := ./go
+OUT_DIR   := .$(GO_SRC_DIR)/gen   # you’re generating next to the .proto source
 GO_PKGS   := $(shell go list ./... | grep -v /vendor/)
 
 # List every .proto file so ‘make’ knows what to re‑generate
