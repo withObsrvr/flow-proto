@@ -1,6 +1,8 @@
 syntax = "proto3";
 package flow.v1;
 
+option go_package = "github.com/withObsrvr/flow-proto/proto/flow/v1;flowv1";
+
 import "google/protobuf/timestamp.proto";
 
 /** Stable position in the ledger stream. */
