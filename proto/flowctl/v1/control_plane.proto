@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package flowctl.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/flowctl/v1;flowctlv1";
+
+import "flowctl/v1/common.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// ControlPlaneService manages component registration, discovery, and health monitoring.
+// This service is provided by the flowctl orchestrator.
+service ControlPlaneService {
+  // Register a component with the control plane
+  rpc RegisterComponent(RegisterRequest) returns (RegisterResponse);
+
+  // Unregister a component
+  rpc UnregisterComponent(UnregisterRequest) returns (google.protobuf.Empty);
+
+  // Discover components by type or event types
+  rpc DiscoverComponents(DiscoveryRequest) returns (DiscoveryResponse);
+
+  // Send heartbeat to maintain component registration
+  rpc Heartbeat(HeartbeatRequest) returns (google.protobuf.Empty);
+
+  // Query component status
+  rpc GetComponentStatus(ComponentStatusRequest) returns (ComponentStatusResponse);
+
+  // List all registered components
+  rpc ListComponents(ListComponentsRequest) returns (ListComponentsResponse);
+}
+
+// RegisterRequest registers a component with the control plane
+message RegisterRequest {
+  // Component information
+  ComponentInfo component = 1;
+
+  // Component ID from environment (FLOWCTL_COMPONENT_ID)
+  // Used for self-registering components
+  string component_id = 2;
+}
+
+// RegisterResponse confirms registration and provides assigned identifiers
+message RegisterResponse {
+  // Assigned service ID (may differ from requested ID)
+  string service_id = 1;
+
+  // Topics/event types assigned to this component
+  repeated string assigned_topics = 2;
+
+  // Connection information for upstream/downstream components
+  map<string, string> connection_info = 3;
+}
+
+// UnregisterRequest unregisters a component
+message UnregisterRequest {
+  string service_id = 1;
+}
+
+// DiscoveryRequest queries for components
+message DiscoveryRequest {
+  // Filter by component type (optional)
+  ComponentType type = 1;
+
+  // Find components that handle these event types (OR logic)
+  repeated string event_types = 2;
+
+  // Filter by metadata key-value pairs (AND logic)
+  map<string, string> metadata_filters = 3;
+}
+
+// DiscoveryResponse returns matching components
+message DiscoveryResponse {
+  repeated ComponentInfo components = 1;
+}
+
+// HeartbeatRequest maintains component registration
+message HeartbeatRequest {
+  string service_id = 1;
+  HealthStatus status = 2;
+  map<string, string> metrics = 3;
+}
+
+// ComponentStatusRequest queries component status
+message ComponentStatusRequest {
+  string service_id = 1;
+}
+
+// ComponentStatusResponse returns component status
+message ComponentStatusResponse {
+  ComponentInfo component = 1;
+  HealthStatus status = 2;
+  google.protobuf.Timestamp last_heartbeat = 3;
+  map<string, string> metrics = 4;
+  google.protobuf.Timestamp registered_at = 5;
+}
+
+// ListComponentsRequest lists all registered components
+message ListComponentsRequest {
+  // Filter by type (optional)
+  ComponentType type_filter = 1;
+
+  // Include unhealthy components
+  bool include_unhealthy = 2;
+}
+
+// ListComponentsResponse returns all registered components
+message ListComponentsResponse {
+  repeated ComponentStatusResponse components = 1;
+}

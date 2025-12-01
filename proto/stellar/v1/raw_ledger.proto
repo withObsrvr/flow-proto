@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
+
+import "flowctl/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+// RawLedgerService streams raw Stellar ledger data (LedgerCloseMeta XDR).
+// This is a Stellar-specific source service.
+service RawLedgerService {
+  // Get service information
+  rpc GetInfo(google.protobuf.Empty) returns (flowctl.v1.ComponentInfo);
+
+  // Health check
+  rpc HealthCheck(flowctl.v1.HealthCheckRequest) returns (flowctl.v1.HealthCheckResponse);
+
+  // Stream raw ledgers starting from a specific sequence (indefinite streaming)
+  rpc StreamRawLedgers(StreamLedgersRequest) returns (stream RawLedger);
+
+  // Get a specific range of ledgers (batch mode)
+  rpc GetLedgerRange(GetLedgerRangeRequest) returns (GetLedgerRangeResponse);
+}
+
+// RawLedger contains raw ledger metadata in XDR format
+message RawLedger {
+  // Ledger sequence number
+  uint32 sequence = 1;
+
+  // Raw XDR bytes of LedgerCloseMeta
+  bytes ledger_close_meta_xdr = 2;
+
+  // Optional: Network passphrase
+  string network = 3;
+
+  // Optional: When this ledger was closed (Unix timestamp)
+  int64 closed_at = 4;
+}
+
+// StreamLedgersRequest requests indefinite ledger streaming
+message StreamLedgersRequest {
+  // Starting ledger sequence (inclusive)
+  uint32 start_ledger = 1;
+
+  // Optional: Network to stream from (testnet, mainnet, futurenet)
+  string network = 2;
+}
+
+// GetLedgerRangeRequest requests a specific range of ledgers (batch mode)
+message GetLedgerRangeRequest {
+  // Starting ledger sequence (inclusive)
+  uint32 start_ledger = 1;
+
+  // Ending ledger sequence (exclusive) - range is [start_ledger, end_ledger)
+  uint32 end_ledger = 2;
+
+  // Optional: Network
+  string network = 3;
+}
+
+// GetLedgerRangeResponse returns a batch of ledgers
+message GetLedgerRangeResponse {
+  // The requested ledgers
+  repeated RawLedger ledgers = 1;
+
+  // Current network latest ledger
+  uint32 latest_ledger = 2;
+}
