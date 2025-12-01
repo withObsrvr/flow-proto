@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+package flowctl.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/flowctl/v1;flowctlv1";
+
+import "google/protobuf/timestamp.proto";
+
+// Event is the standard envelope for all data flowing through flowctl pipelines.
+// This is the single message type used by all sources, processors, and consumers.
+message Event {
+  // Unique event identifier (UUID recommended)
+  string id = 1;
+
+  // Event type for routing and processing
+  // Examples: "stellar.ledger.v1", "contract.event.v1", "account.balance.v1"
+  string type = 2;
+
+  // Raw event payload (format specified by content_type)
+  bytes payload = 3;
+
+  // Simple key-value metadata
+  // Use this for routing hints, trace IDs, processing instructions
+  map<string, string> metadata = 4;
+
+  // When the event was created (set by source)
+  google.protobuf.Timestamp timestamp = 5;
+
+  // Which component produced this event
+  string source_component_id = 6;
+
+  // Content type of payload
+  // Examples: "application/json", "application/protobuf", "stellar/xdr"
+  string content_type = 7;
+
+  // Stellar-specific cursor (optional, only for Stellar events)
+  // Import stellar.v1 types for this field
+  optional StellarCursor stellar_cursor = 8;
+}
+
+// Stellar-specific ledger position
+// Allows resuming from specific point in Stellar blockchain
+message StellarCursor {
+  uint64 ledger_sequence = 1;
+  uint32 index_in_ledger = 2;  // 0 for ledger meta, >0 for events within ledger
+}
+
+// ComponentInfo describes a flowctl component's capabilities
+message ComponentInfo {
+  // Unique component identifier
+  string id = 1;
+
+  // Human-readable name
+  string name = 2;
+
+  // Component description
+  string description = 3;
+
+  // Semantic version
+  string version = 4;
+
+  // Component type
+  ComponentType type = 5;
+
+  // Event types this component accepts as input
+  repeated string input_event_types = 6;
+
+  // Event types this component produces as output
+  repeated string output_event_types = 7;
+
+  // gRPC endpoint (host:port)
+  string endpoint = 8;
+
+  // Additional metadata
+  map<string, string> metadata = 9;
+}
+
+// ComponentType identifies the role of a component in the pipeline
+enum ComponentType {
+  COMPONENT_TYPE_UNSPECIFIED = 0;
+  COMPONENT_TYPE_SOURCE = 1;      // Produces events
+  COMPONENT_TYPE_PROCESSOR = 2;   // Transforms events
+  COMPONENT_TYPE_CONSUMER = 3;    // Consumes events
+}
+
+// HealthStatus represents the health state of a component
+enum HealthStatus {
+  HEALTH_STATUS_UNKNOWN = 0;
+  HEALTH_STATUS_STARTING = 1;
+  HEALTH_STATUS_HEALTHY = 2;
+  HEALTH_STATUS_DEGRADED = 3;
+  HEALTH_STATUS_UNHEALTHY = 4;
+  HEALTH_STATUS_STOPPING = 5;
+}
+
+// HealthCheckRequest requests health status from a component
+message HealthCheckRequest {
+  // Include detailed component health information
+  bool include_details = 1;
+}
+
+// HealthCheckResponse reports component health status
+message HealthCheckResponse {
+  // Overall health status
+  HealthStatus status = 1;
+
+  // Metrics as key-value pairs
+  map<string, string> metrics = 2;
+
+  // Detailed health of sub-components
+  repeated ComponentHealth components = 3;
+
+  // Optional message with additional context
+  string message = 4;
+}
+
+// ComponentHealth represents the health of a sub-component
+message ComponentHealth {
+  string component_name = 1;
+  HealthStatus status = 2;
+  string message = 3;
+}

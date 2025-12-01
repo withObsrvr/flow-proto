@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
+
+import "flowctl/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+// AccountBalanceService streams account balance data from Stellar ledgers.
+// This is a Stellar-specific processor service.
+service AccountBalanceService {
+  // Get service information
+  rpc GetInfo(google.protobuf.Empty) returns (flowctl.v1.ComponentInfo);
+
+  // Health check
+  rpc HealthCheck(flowctl.v1.HealthCheckRequest) returns (flowctl.v1.HealthCheckResponse);
+
+  // Stream account balances from ledger data
+  rpc StreamAccountBalances(StreamAccountBalancesRequest) returns (stream AccountBalance);
+}
+
+// AccountBalance represents a single account's balance for a specific asset
+message AccountBalance {
+  string account_id = 1;       // Stellar account ID (G...)
+  string asset_code = 2;       // Asset code (e.g., "USDC", empty for XLM)
+  string asset_issuer = 3;     // Asset issuer account ID (empty for XLM)
+  int64 balance = 4;           // Balance in stroops (1 XLM = 10^7 stroops)
+  uint32 last_modified_ledger = 5;  // Ledger sequence when balance was last modified
+}
+
+// StreamAccountBalancesRequest requests account balance streaming
+message StreamAccountBalancesRequest {
+  uint32 start_ledger = 1;     // Starting ledger sequence (inclusive)
+  uint32 end_ledger = 2;       // Ending ledger sequence (inclusive, 0 = no limit)
+
+  // Optional filters
+  string filter_asset_code = 3;    // Filter by asset code (empty = all assets)
+  string filter_asset_issuer = 4;  // Filter by asset issuer (empty = all issuers)
+}

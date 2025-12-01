@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package flowctl.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/flowctl/v1;flowctlv1";
+
+import "flowctl/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+// ConsumerService defines the interface for event consumers in flowctl pipelines.
+// Consumers receive events and persist or forward them to external systems.
+service ConsumerService {
+  // Get component information and capabilities
+  rpc GetInfo(google.protobuf.Empty) returns (ComponentInfo);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+
+  // Consume events (streaming from orchestrator/processor)
+  // Client streams events to consumer, receives summary response
+  rpc Consume(stream Event) returns (ConsumeResponse);
+}
+
+// ConsumeResponse summarizes consumption results
+message ConsumeResponse {
+  // Number of events successfully consumed
+  int64 events_consumed = 1;
+
+  // Number of events that failed to consume
+  int64 events_failed = 2;
+
+  // Error messages for failed events
+  repeated string errors = 3;
+}

@@ -2,7 +2,7 @@
   description = "Reproducible proto tool‑chain for flow‑proto";
 
   inputs = {
-    nixpkgs.url     = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url     = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -13,7 +13,7 @@
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            go_1_22
+            go                    # Go 1.25.4
             protobuf              # protoc
             protoc-gen-go
             protoc-gen-go-grpc

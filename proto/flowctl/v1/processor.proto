@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package flowctl.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/flowctl/v1;flowctlv1";
+
+import "flowctl/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+// ProcessorService defines the interface for event processors in flowctl pipelines.
+// Processors receive events, transform them, and output new events.
+service ProcessorService {
+  // Get component information and capabilities
+  rpc GetInfo(google.protobuf.Empty) returns (ComponentInfo);
+
+  // Health check
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+
+  // Bidirectional streaming for event processing
+  // This is the primary method for event transformation
+  // Client sends input events, receives processed output events
+  rpc Process(stream Event) returns (stream Event);
+}
