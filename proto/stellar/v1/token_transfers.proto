@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
+
+import "google/protobuf/timestamp.proto";
+
+// TokenTransfer events follow SEP-41 (Token Transfer Events)
+// These events represent token movements on Stellar (native, issued assets, and Soroban tokens)
+
+// EventMeta contains metadata about the token transfer event
+message TokenTransferEventMeta {
+  uint32 ledger_sequence = 1;
+  google.protobuf.Timestamp closed_at = 2;
+  string tx_hash = 3;
+  uint32 transaction_index = 4; // 1-indexed as per SEP-35
+  optional uint32 operation_index = 5; // 1-indexed as per SEP-35, optional for contract events
+  string contract_address = 6; // ContractID derived from asset or emitting contract
+}
+
+// Asset represents a Stellar asset (native, issued, or custom/Soroban)
+message Asset {
+  oneof asset {
+    // Native XLM
+    bool native = 1;
+
+    // Issued asset (classic Stellar asset)
+    IssuedAsset issued = 2;
+
+    // Custom/Soroban asset (contract-based)
+    string contract_id = 3;
+  }
+}
+
+message IssuedAsset {
+  string asset_code = 1;
+  string asset_issuer = 2;
+}
+
+// Transfer represents a token transfer from one account to another
+message Transfer {
+  string from = 1; // Strkey representation
+  string to = 2; // Strkey representation
+  Asset asset = 3;
+  string amount = 4; // String representation for precision
+}
+
+// Mint represents token creation/minting
+message Mint {
+  string to = 1; // Strkey representation
+  Asset asset = 2;
+  string amount = 3;
+}
+
+// Burn represents token destruction/burning
+message Burn {
+  string from = 1; // Strkey representation
+  Asset asset = 2;
+  string amount = 3;
+}
+
+// Clawback represents asset clawback by issuer
+message Clawback {
+  string from = 1; // Strkey representation
+  Asset asset = 2;
+  string amount = 3;
+}
+
+// Fee represents transaction fee payment
+message Fee {
+  string from = 1; // Strkey representation
+  Asset asset = 2;
+  string amount = 3;
+}
+
+// TokenTransferEvent represents a single token transfer event
+message TokenTransferEvent {
+  TokenTransferEventMeta meta = 1;
+
+  oneof event {
+    Transfer transfer = 2;
+    Mint mint = 3;
+    Burn burn = 4;
+    Clawback clawback = 5;
+    Fee fee = 6;
+  }
+}
+
+// TokenTransferBatch represents a batch of token transfer events from a single ledger
+message TokenTransferBatch {
+  repeated TokenTransferEvent events = 1;
+}

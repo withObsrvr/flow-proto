@@ -60,3 +60,8 @@ message GetContractEventsRequest {
   bool include_failed = 5;              // Include events from failed transactions
   bool include_diagnostics = 6;         // Include diagnostic events
 }
+
+// ContractEventBatch represents a batch of contract events from a single ledger
+message ContractEventBatch {
+  repeated ContractEvent events = 1;
+}

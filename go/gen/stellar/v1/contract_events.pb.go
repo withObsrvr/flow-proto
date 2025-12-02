@@ -340,6 +340,51 @@ func (x *GetContractEventsRequest) GetIncludeDiagnostics() bool {
 	return false
 }
 
+// ContractEventBatch represents a batch of contract events from a single ledger
+type ContractEventBatch struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Events        []*ContractEvent       `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ContractEventBatch) Reset() {
+	*x = ContractEventBatch{}
+	mi := &file_stellar_v1_contract_events_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContractEventBatch) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContractEventBatch) ProtoMessage() {}
+
+func (x *ContractEventBatch) ProtoReflect() protoreflect.Message {
+	mi := &file_stellar_v1_contract_events_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContractEventBatch.ProtoReflect.Descriptor instead.
+func (*ContractEventBatch) Descriptor() ([]byte, []int) {
+	return file_stellar_v1_contract_events_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ContractEventBatch) GetEvents() []*ContractEvent {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
 var File_stellar_v1_contract_events_proto protoreflect.FileDescriptor
 
 const file_stellar_v1_contract_events_proto_rawDesc = "" +
@@ -377,7 +422,9 @@ const file_stellar_v1_contract_events_proto_rawDesc = "" +
 	"\vevent_types\x18\x04 \x03(\tR\n" +
 	"eventTypes\x12%\n" +
 	"\x0einclude_failed\x18\x05 \x01(\bR\rincludeFailed\x12/\n" +
-	"\x13include_diagnostics\x18\x06 \x01(\bR\x12includeDiagnostics2\xfc\x01\n" +
+	"\x13include_diagnostics\x18\x06 \x01(\bR\x12includeDiagnostics\"G\n" +
+	"\x12ContractEventBatch\x121\n" +
+	"\x06events\x18\x01 \x03(\v2\x19.stellar.v1.ContractEventR\x06events2\xfc\x01\n" +
 	"\x14ContractEventService\x12<\n" +
 	"\aGetInfo\x12\x16.google.protobuf.Empty\x1a\x19.flowctl.v1.ComponentInfo\x12N\n" +
 	"\vHealthCheck\x12\x1e.flowctl.v1.HealthCheckRequest\x1a\x1f.flowctl.v1.HealthCheckResponse\x12V\n" +
@@ -395,32 +442,34 @@ func file_stellar_v1_contract_events_proto_rawDescGZIP() []byte {
 	return file_stellar_v1_contract_events_proto_rawDescData
 }
 
-var file_stellar_v1_contract_events_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_stellar_v1_contract_events_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_stellar_v1_contract_events_proto_goTypes = []any{
 	(*EventMeta)(nil),                // 0: stellar.v1.EventMeta
 	(*ScValue)(nil),                  // 1: stellar.v1.ScValue
 	(*ContractEvent)(nil),            // 2: stellar.v1.ContractEvent
 	(*GetContractEventsRequest)(nil), // 3: stellar.v1.GetContractEventsRequest
-	(*emptypb.Empty)(nil),            // 4: google.protobuf.Empty
-	(*v1.HealthCheckRequest)(nil),    // 5: flowctl.v1.HealthCheckRequest
-	(*v1.ComponentInfo)(nil),         // 6: flowctl.v1.ComponentInfo
-	(*v1.HealthCheckResponse)(nil),   // 7: flowctl.v1.HealthCheckResponse
+	(*ContractEventBatch)(nil),       // 4: stellar.v1.ContractEventBatch
+	(*emptypb.Empty)(nil),            // 5: google.protobuf.Empty
+	(*v1.HealthCheckRequest)(nil),    // 6: flowctl.v1.HealthCheckRequest
+	(*v1.ComponentInfo)(nil),         // 7: flowctl.v1.ComponentInfo
+	(*v1.HealthCheckResponse)(nil),   // 8: flowctl.v1.HealthCheckResponse
 }
 var file_stellar_v1_contract_events_proto_depIdxs = []int32{
 	0, // 0: stellar.v1.ContractEvent.meta:type_name -> stellar.v1.EventMeta
 	1, // 1: stellar.v1.ContractEvent.topics:type_name -> stellar.v1.ScValue
 	1, // 2: stellar.v1.ContractEvent.data:type_name -> stellar.v1.ScValue
-	4, // 3: stellar.v1.ContractEventService.GetInfo:input_type -> google.protobuf.Empty
-	5, // 4: stellar.v1.ContractEventService.HealthCheck:input_type -> flowctl.v1.HealthCheckRequest
-	3, // 5: stellar.v1.ContractEventService.GetContractEvents:input_type -> stellar.v1.GetContractEventsRequest
-	6, // 6: stellar.v1.ContractEventService.GetInfo:output_type -> flowctl.v1.ComponentInfo
-	7, // 7: stellar.v1.ContractEventService.HealthCheck:output_type -> flowctl.v1.HealthCheckResponse
-	2, // 8: stellar.v1.ContractEventService.GetContractEvents:output_type -> stellar.v1.ContractEvent
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	2, // 3: stellar.v1.ContractEventBatch.events:type_name -> stellar.v1.ContractEvent
+	5, // 4: stellar.v1.ContractEventService.GetInfo:input_type -> google.protobuf.Empty
+	6, // 5: stellar.v1.ContractEventService.HealthCheck:input_type -> flowctl.v1.HealthCheckRequest
+	3, // 6: stellar.v1.ContractEventService.GetContractEvents:input_type -> stellar.v1.GetContractEventsRequest
+	7, // 7: stellar.v1.ContractEventService.GetInfo:output_type -> flowctl.v1.ComponentInfo
+	8, // 8: stellar.v1.ContractEventService.HealthCheck:output_type -> flowctl.v1.HealthCheckResponse
+	2, // 9: stellar.v1.ContractEventService.GetContractEvents:output_type -> stellar.v1.ContractEvent
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_stellar_v1_contract_events_proto_init() }
@@ -435,7 +484,7 @@ func file_stellar_v1_contract_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_stellar_v1_contract_events_proto_rawDesc), len(file_stellar_v1_contract_events_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
