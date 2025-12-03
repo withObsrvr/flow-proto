@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/gen/stellar/v1;stellarv1";
+
+import "google/protobuf/timestamp.proto";
+
+// ContractInvocationEvent represents a Soroban contract invocation on the Stellar network.
+// It captures the complete execution context including function calls, diagnostic events,
+// cross-contract calls, and state changes.
+message ContractInvocationEvent {
+  // Core metadata
+  google.protobuf.Timestamp timestamp = 1;
+  uint32 ledger_sequence = 2;
+  uint32 transaction_index = 3;
+  uint32 operation_index = 4;
+  string transaction_hash = 5;
+
+  // Contract invocation details
+  string contract_id = 6;
+  string invoking_account = 7;
+  string function_name = 8;
+
+  // Function arguments in JSON-encoded format
+  // Each argument is a JSON string representing the decoded ScVal
+  repeated string arguments = 9;
+
+  // Execution results
+  bool successful = 10;
+
+  // Rich execution context
+  repeated DiagnosticEvent diagnostic_events = 11;
+  repeated ContractCall contract_calls = 12;
+  repeated StateChange state_changes = 13;
+  repeated TtlExtension ttl_extensions = 14;
+}
+
+// DiagnosticEvent represents a diagnostic event emitted during contract execution.
+// These events provide insights into contract behavior and can contain custom data
+// emitted by the contract for debugging and monitoring purposes.
+message DiagnosticEvent {
+  string contract_id = 1;
+
+  // Topics as JSON-encoded strings
+  repeated string topics = 2;
+
+  // Event data as JSON-encoded string
+  string data = 3;
+}
+
+// ContractCall represents a contract-to-contract invocation.
+// This captures the execution tree of cross-contract calls, which is crucial
+// for understanding complex DeFi interactions and contract composition patterns.
+message ContractCall {
+  string from_contract = 1;
+  string to_contract = 2;
+  string function = 3;
+
+  // Arguments as JSON-encoded strings
+  repeated string arguments = 4;
+
+  int32 call_depth = 5;
+
+  // Authorization type: "source_account", "contract", or "inferred"
+  string auth_type = 6;
+
+  bool successful = 7;
+  int32 execution_order = 8;
+}
+
+// StateChange represents a contract storage modification.
+// Tracking state changes enables audit trails and understanding of contract
+// storage access patterns.
+message StateChange {
+  string contract_id = 1;
+
+  // Storage key as JSON-encoded string
+  string key = 2;
+
+  // Old value as JSON-encoded string (empty for "create" operations)
+  string old_value = 3;
+
+  // New value as JSON-encoded string (empty for "delete" operations)
+  string new_value = 4;
+
+  // Operation type: "create", "update", or "delete"
+  string operation = 5;
+}
+
+// TtlExtension represents a Time-To-Live extension for contract storage.
+// Soroban contracts have TTLs on their state entries, and tracking extensions
+// helps understand contract maintenance patterns and storage rent costs.
+message TtlExtension {
+  string contract_id = 1;
+  uint32 old_ttl = 2;
+  uint32 new_ttl = 3;
+}
+
+// ContractInvocationBatch is a collection of contract invocations from a single ledger.
+// This is the message type returned by the processor.
+message ContractInvocationBatch {
+  repeated ContractInvocationEvent invocations = 1;
+
+  // Metadata about the batch
+  uint32 ledger_sequence = 2;
+  int32 invocation_count = 3;
+}
