@@ -6,19 +6,42 @@ This repository contains the Protocol Buffer definitions for the flowctl data pi
 
 ```
 proto/
-├── flowctl/v1/           # Core flow protocol (general-purpose)
-│   ├── common.proto          # Event, ComponentInfo, Health
-│   ├── source.proto          # SourceService interface
-│   ├── processor.proto       # ProcessorService interface
-│   ├── consumer.proto        # ConsumerService interface
-│   └── control_plane.proto   # ControlPlaneService (registration & discovery)
+├── flowctl/v1/                # Core flow protocol (general-purpose)
+│   ├── common.proto               # Event, ComponentInfo, Health
+│   ├── source.proto               # SourceService interface
+│   ├── processor.proto            # ProcessorService interface
+│   ├── consumer.proto             # ConsumerService interface
+│   └── control_plane.proto        # ControlPlaneService (registration & discovery)
 │
-└── stellar/v1/           # Stellar blockchain extensions
-    ├── raw_ledger.proto      # RawLedgerService (ledger streaming)
-    ├── contract_events.proto # ContractEventService (Soroban events)
-    ├── account_balances.proto# AccountBalanceService
-    └── contract_data.proto   # ContractDataService
+└── stellar/v1/                # Stellar blockchain extensions
+    ├── raw_ledger.proto           # RawLedgerService (ledger streaming)
+    ├── contract_events.proto      # ContractEventService (Soroban events)
+    ├── contract_invocation.proto  # ContractInvocationEvent (Soroban invocations with execution context)
+    ├── token_transfers.proto      # TokenTransferEvent (SEP-41 token transfers)
+    ├── account_balances.proto     # AccountBalanceService
+    └── contract_data.proto        # ContractDataService
 ```
+
+## Overview
+
+Flow Proto defines the protocol for the flowctl data pipeline framework, providing:
+
+**Core Framework (`flowctl/v1`)**:
+- Standard `Event` envelope for all data flowing through pipelines
+- Component service interfaces (Source, Processor, Consumer)
+- Control plane for component registration and discovery
+- Health monitoring and metrics
+
+**Stellar Integration (`stellar/v1`)**:
+- Raw ledger streaming (XDR format)
+- Contract events and invocations with rich execution context
+- SEP-41 compliant token transfer events
+- Account balance tracking
+- Contract data access
+
+**Recent Additions**:
+- Contract invocation events with diagnostic events, cross-contract calls, and state changes
+- Token transfer events supporting native XLM, issued assets, and Soroban tokens
 
 ## Quick Start
 
@@ -138,6 +161,48 @@ event := &flowctlv1.Event{
 }
 ```
 
+### Working with Contract Invocation Events
+
+```go
+import stellarv1 "github.com/withObsrvr/flow-proto/go/gen/stellar/v1"
+
+// Contract invocation with full execution context
+invocation := &stellarv1.ContractInvocationEvent{
+    LedgerSequence:    1000,
+    TransactionHash:   "abc123...",
+    ContractId:        "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+    InvokingAccount:   "GABC...",
+    FunctionName:      "transfer",
+    Arguments:         []string{`{"from":"GABC..."}`, `{"to":"GXYZ..."}`, `{"amount":"1000000"}`},
+    Successful:        true,
+    DiagnosticEvents:  []*stellarv1.DiagnosticEvent{...},  // Debug/monitoring events
+    ContractCalls:     []*stellarv1.ContractCall{...},     // Cross-contract call tree
+    StateChanges:      []*stellarv1.StateChange{...},      // Storage modifications
+}
+```
+
+### Working with Token Transfer Events
+
+```go
+// SEP-41 compliant token transfer
+transfer := &stellarv1.TokenTransferEvent{
+    Meta: &stellarv1.TokenTransferEventMeta{
+        LedgerSequence:   1000,
+        TxHash:          "abc123...",
+        TransactionIndex: 1,
+        ContractAddress:  "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC",
+    },
+    Event: &stellarv1.TokenTransferEvent_Transfer{
+        Transfer: &stellarv1.Transfer{
+            From:   "GABC...",
+            To:     "GXYZ...",
+            Asset:  &stellarv1.Asset{Asset: &stellarv1.Asset_Native{Native: true}},
+            Amount: "1000000",
+        },
+    },
+}
+```
+
 ## Development
 
 ### Prerequisites
@@ -146,11 +211,16 @@ event := &flowctlv1.Event{
 - protoc compiler
 - protoc-gen-go and protoc-gen-go-grpc plugins
 
-Or use nix:
+Or use Nix (recommended):
 
 ```bash
 nix develop  # Enters development environment with all tools
 ```
+
+The Nix flake provides:
+- Go 1.25.4 toolchain
+- protoc 32.1 with protoc-gen-go and protoc-gen-go-grpc plugins
+- Git and GNU Make
 
 ### Generating Proto Code
 
@@ -231,6 +301,8 @@ message ComponentInfo {
 
 - **RawLedgerService**: Streams Stellar ledger data (XDR format)
 - **ContractEventService**: Streams Soroban contract events with filtering
+- **ContractInvocationEvent**: Rich contract invocation data with execution context (diagnostic events, cross-contract calls, state changes)
+- **TokenTransferEvent**: SEP-41 compliant token transfer events (transfer, mint, burn, clawback, fee)
 - **AccountBalanceService**: Streams account balance changes
 - **ContractDataService**: Provides contract data via Arrow Flight
 
