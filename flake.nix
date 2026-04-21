@@ -13,7 +13,7 @@
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            go                    # Go 1.25.4
+            go                    # Go toolchain (currently 1.26.x on nixos-unstable)
             protobuf              # protoc
             protoc-gen-go
             protoc-gen-go-grpc

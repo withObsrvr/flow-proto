@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
+
+import "flowctl/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+// LiquidityPoolEventService streams Stellar liquidity pool events.
+service LiquidityPoolEventService {
+  // Get service information
+  rpc GetInfo(google.protobuf.Empty) returns (flowctl.v1.ComponentInfo);
+
+  // Health check
+  rpc HealthCheck(flowctl.v1.HealthCheckRequest) returns (flowctl.v1.HealthCheckResponse);
+
+  // Stream liquidity pool events
+  rpc GetLiquidityPoolEvents(GetLiquidityPoolEventsRequest) returns (stream LiquidityPoolEvent);
+}
+
+// LiquidityPoolEvent represents a liquidity pool operation.
+message LiquidityPoolEvent {
+  // Operation type: "deposit", "withdraw", or "trade"
+  string type = 1;
+
+  // Pool ID (hex-encoded)
+  string pool_id = 2;
+
+  // Account performing the operation
+  string account = 3;
+
+  // Assets involved in the operation
+  repeated PoolAsset assets = 4;
+
+  // Shares minted (deposit) or burned (withdraw)
+  string shares = 5;
+
+  // Pool reserves before the operation
+  repeated ReserveAmount reserves_before = 6;
+
+  // Pool reserves after the operation
+  repeated ReserveAmount reserves_after = 7;
+
+  // Event metadata
+  LiquidityPoolEventMeta meta = 10;
+}
+
+// PoolAsset represents an asset and amount in a pool operation.
+message PoolAsset {
+  string asset_type = 1;
+  string asset_code = 2;
+  string asset_issuer = 3;
+  string amount = 4;
+}
+
+// ReserveAmount represents a pool reserve.
+message ReserveAmount {
+  string asset_type = 1;
+  string asset_code = 2;
+  string asset_issuer = 3;
+  string amount = 4;
+}
+
+// LiquidityPoolEventMeta contains chronological context for the event.
+message LiquidityPoolEventMeta {
+  uint32 ledger_sequence = 1;
+  int64 ledger_closed_at = 2;  // Unix timestamp
+  string tx_hash = 3;
+  uint32 tx_index = 4;
+  uint32 operation_index = 5;
+  bool tx_successful = 6;
+}
+
+// GetLiquidityPoolEventsRequest defines filtering for liquidity pool events.
+message GetLiquidityPoolEventsRequest {
+  uint32 start_ledger = 1;
+  uint32 end_ledger = 2;  // 0 for continuous streaming
+
+  // Optional filters
+  repeated string pool_ids = 3;       // Filter by specific pool IDs
+  repeated string event_types = 4;    // Filter by operation type (deposit, withdraw, trade)
+  bool include_failed = 5;            // Include events from failed transactions
+}
+
+// LiquidityPoolEventBatch represents a batch of events from a single ledger.
+message LiquidityPoolEventBatch {
+  repeated LiquidityPoolEvent events = 1;
+}

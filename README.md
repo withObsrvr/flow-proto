@@ -218,7 +218,7 @@ nix develop  # Enters development environment with all tools
 ```
 
 The Nix flake provides:
-- Go 1.25.4 toolchain
+- Go 1.26.1 toolchain
 - protoc 32.1 with protoc-gen-go and protoc-gen-go-grpc plugins
 - Git and GNU Make
 

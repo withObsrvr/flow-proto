@@ -11,7 +11,7 @@ import "google/protobuf/timestamp.proto";
 import "ingest/asset/asset.proto"; // Asset message
 
 
-option go_package = "github.com/withObsrvr/flow-proto/proto/ingest/processors/token_transfer;token_transfer";
+option go_package = "github.com/withObsrvr/flow-proto/ingest/processors/token_transfer;token_transfer";
 
 
 // EventMeta message

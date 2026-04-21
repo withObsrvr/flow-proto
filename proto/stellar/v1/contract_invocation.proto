@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stellar.v1;
 
-option go_package = "github.com/withObsrvr/flow-proto/gen/stellar/v1;stellarv1";
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
 
 import "google/protobuf/timestamp.proto";
 
