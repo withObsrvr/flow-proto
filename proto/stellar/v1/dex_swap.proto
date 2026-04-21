@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
+
+import "stellar/v1/defi_position.proto";
+
+// DexSwap represents a normalized DEX swap across any Stellar protocol.
+message DexSwap {
+  // Account that performed the swap
+  string trader = 1;
+
+  // Sold side
+  string sold_asset_code = 2;
+  string sold_asset_issuer = 3;
+  string sold_contract_id = 4;
+  string sold_amount = 5;           // Decimal string
+
+  // Bought side
+  string bought_asset_code = 6;
+  string bought_asset_issuer = 7;
+  string bought_contract_id = 8;
+  string bought_amount = 9;         // Decimal string
+
+  // Protocol that facilitated this swap
+  Protocol protocol = 10;
+
+  // Pool or pair ID (protocol-specific)
+  string pool_id = 11;
+
+  // Swap route (for multi-hop swaps)
+  repeated string route = 12;
+
+  // Event metadata
+  DexSwapMeta meta = 15;
+}
+
+// DexSwapMeta contains chronological context for the swap.
+message DexSwapMeta {
+  uint32 ledger_sequence = 1;
+  int64 ledger_closed_at = 2;       // Unix timestamp
+  string tx_hash = 3;
+  uint32 tx_index = 4;
+  bool tx_successful = 5;
+}
+
+// DexSwapBatch represents swaps extracted from a single ledger.
+message DexSwapBatch {
+  repeated DexSwap swaps = 1;
+}

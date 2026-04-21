@@ -6,6 +6,9 @@ FLOWCTL_PROTOS := $(shell find $(PROTO_DIR)/flowctl -name '*.proto' 2>/dev/null)
 STELLAR_PROTOS := $(shell find $(PROTO_DIR)/stellar -name '*.proto' 2>/dev/null)
 ALL_NEW_PROTOS := $(FLOWCTL_PROTOS) $(STELLAR_PROTOS)
 
+# Ingest protos (shared types used by legacy flow/v1)
+INGEST_PROTOS := $(shell find $(PROTO_DIR)/ingest -name '*.proto' 2>/dev/null)
+
 # Legacy protos (for backward compatibility during transition)
 LEGACY_PROTOS := $(shell find $(PROTO_DIR)/processor $(PROTO_DIR)/source $(PROTO_DIR)/consumer $(PROTO_DIR)/flow -name '*.proto' 2>/dev/null)
 
@@ -28,8 +31,24 @@ proto-new:
 	@echo "✓ Generated $(words $(ALL_NEW_PROTOS)) proto files"
 	@echo "✓ Output: $(GO_OUT)/flowctl/v1/ and $(GO_OUT)/stellar/v1/"
 
+## Generate ingest protos (shared types, generated into proto/ tree per go_package)
+proto-ingest:
+	@echo "→ Generating ingest proto stubs..."
+	@if [ -n "$(INGEST_PROTOS)" ]; then \
+		protoc \
+		  -I=$(PROTO_DIR) \
+		  --go_out=. \
+		  --go_opt=paths=source_relative \
+		  --go-grpc_out=. \
+		  --go-grpc_opt=paths=source_relative \
+		  $(INGEST_PROTOS); \
+		echo "✓ Generated $(words $(INGEST_PROTOS)) ingest proto files"; \
+	else \
+		echo "No ingest protos found"; \
+	fi
+
 ## Generate legacy protos (for backward compatibility)
-proto-legacy:
+proto-legacy: proto-ingest
 	@echo "→ Generating legacy proto stubs..."
 	@mkdir -p $(GO_OUT)
 	@if [ -n "$(LEGACY_PROTOS)" ]; then \

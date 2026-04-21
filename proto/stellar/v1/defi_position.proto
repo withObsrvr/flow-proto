@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
+
+import "google/protobuf/timestamp.proto";
+
+// Protocol identifies the DeFi protocol a position belongs to.
+enum Protocol {
+  PROTOCOL_UNKNOWN = 0;
+  PROTOCOL_BLEND = 1;
+  PROTOCOL_SOROSWAP = 2;
+  PROTOCOL_AQUARIUS = 3;
+  PROTOCOL_FXDAO = 4;
+  PROTOCOL_PHOENIX = 5;
+}
+
+// PositionType classifies the nature of a DeFi position.
+enum PositionType {
+  POSITION_TYPE_UNKNOWN = 0;
+  POSITION_TYPE_LENDING = 1;
+  POSITION_TYPE_BORROWING = 2;
+  POSITION_TYPE_LP = 3;
+  POSITION_TYPE_VAULT = 4;
+}
+
+// PositionAsset represents an individual asset within a position.
+message PositionAsset {
+  string asset_code = 1;
+  string asset_issuer = 2;
+  string contract_id = 3;      // For Soroban token contracts
+  string amount = 4;           // Decimal string, preserves precision
+  string value_usd = 5;        // USD value as decimal string
+}
+
+// DeFiPosition represents a user's position in a single DeFi protocol.
+message DeFiPosition {
+  // User address (G... or C...)
+  string address = 1;
+
+  // Protocol this position belongs to
+  Protocol protocol = 2;
+
+  // Type of position
+  PositionType position_type = 3;
+
+  // Assets in this position
+  repeated PositionAsset assets = 4;
+
+  // Aggregated values (decimal strings)
+  string total_value = 5;          // Current total value
+  string total_deposited = 6;      // Total deposit value
+  string total_borrowed = 7;       // Total borrowed value (if applicable)
+  string current_return = 8;       // Current return/yield (if applicable)
+
+  // Health factor for lending/borrowing positions (optional)
+  optional string health_factor = 9;
+
+  // Protocol-specific metadata (extensible per reviewer feedback)
+  map<string, string> metadata = 10;
+
+  // Position metadata
+  DeFiPositionMeta meta = 15;
+}
+
+// DeFiPositionMeta contains context about when this position was observed.
+message DeFiPositionMeta {
+  uint32 ledger_sequence = 1;
+  int64 ledger_closed_at = 2;      // Unix timestamp
+  google.protobuf.Timestamp observed_at = 3;
+}
+
+// DeFiPositionBatch represents positions extracted from a single ledger.
+message DeFiPositionBatch {
+  repeated DeFiPosition positions = 1;
+}
+
+// AggregatedPosition represents a user's total DeFi exposure across protocols.
+message AggregatedPosition {
+  // User address
+  string address = 1;
+
+  // All positions across protocols
+  repeated DeFiPosition positions = 2;
+
+  // Aggregated totals (decimal strings)
+  string total_value = 3;
+  string total_deposited = 4;
+  string total_borrowed = 5;
+
+  // Observation context
+  DeFiPositionMeta meta = 10;
+}
+
+// AggregatedPositionBatch represents aggregated positions from a single ledger.
+message AggregatedPositionBatch {
+  repeated AggregatedPosition positions = 1;
+}

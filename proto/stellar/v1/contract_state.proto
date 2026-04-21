@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package stellar.v1;
+
+option go_package = "github.com/withObsrvr/flow-proto/go/gen/stellar/v1;stellarv1";
+
+import "flowctl/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+// ContractStateService streams Stellar Soroban contract state mutations.
+service ContractStateService {
+  // Get service information
+  rpc GetInfo(google.protobuf.Empty) returns (flowctl.v1.ComponentInfo);
+
+  // Health check
+  rpc HealthCheck(flowctl.v1.HealthCheckRequest) returns (flowctl.v1.HealthCheckResponse);
+
+  // Stream contract state events
+  rpc GetContractStateEvents(GetContractStateEventsRequest) returns (stream ContractStateEvent);
+}
+
+// Durability of contract data entries.
+enum Durability {
+  // Persistent data (survives across ledger boundaries until TTL expires)
+  DURABILITY_PERSISTENT = 0;
+
+  // Temporary data (cheaper, shorter TTL)
+  DURABILITY_TEMPORARY = 1;
+}
+
+// ContractStateEvent represents a contract data state change in a ledger.
+message ContractStateEvent {
+  // Contract ID (strkey-encoded, C... address)
+  string contract_id = 1;
+
+  // Hash of the ledger key
+  string ledger_key_hash = 2;
+
+  // Durability of the contract data entry
+  Durability durability = 3;
+
+  // Operation type: "create", "update", or "delete"
+  string operation = 4;
+
+  // Key (base64-encoded XDR)
+  string key_xdr = 5;
+
+  // Value (base64-encoded XDR, empty for deletes)
+  string val_xdr = 6;
+
+  // Key symbol (if the key is a simple symbol, extracted for convenience)
+  string key_symbol = 7;
+
+  // Event metadata
+  ContractStateMeta meta = 10;
+}
+
+// ContractStateMeta contains chronological context for the event.
+message ContractStateMeta {
+  uint32 ledger_sequence = 1;
+  int64 ledger_closed_at = 2;  // Unix timestamp
+  string tx_hash = 3;
+  uint32 tx_index = 4;
+}
+
+// GetContractStateEventsRequest defines filtering for contract state events.
+message GetContractStateEventsRequest {
+  uint32 start_ledger = 1;
+  uint32 end_ledger = 2;  // 0 for continuous streaming
+
+  // Optional filters
+  repeated string contract_ids = 3;    // Filter by specific contract IDs
+  repeated string key_symbols = 4;     // Filter by key symbol
+  bool include_failed = 5;            // Include events from failed transactions
+}
+
+// ContractStateEventBatch represents a batch of events from a single ledger.
+message ContractStateEventBatch {
+  repeated ContractStateEvent events = 1;
+}
